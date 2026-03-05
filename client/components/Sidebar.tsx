@@ -10,6 +10,8 @@ import {
   Users,
   Settings,
   MoreHorizontal,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { IProject } from "@/types/sidebar.type";
@@ -22,27 +24,42 @@ const menu = [
   { name: "Settings", href: "/settings", icon: Settings },
 ];
 
-const projects = [
-  { name: "Mobile App", color: "#22c55e" },
-  { name: "Website Redesign", color: "#eab308" },
-  { name: "Design System", color: "#a855f7" },
-  { name: "Wireframes", color: "#3b82f6" },
+const mockProjects: IProject[] = [
+  { id: "1", name: "Mobile App", color: "#22c55e", href: "/dashboard/project/1" },
+  { id: "2", name: "Website Redesign", color: "#eab308", href: "/project/2" },
+  { id: "3", name: "Design System", color: "#a855f7", href: "/projects/3" },
+  { id: "4", name: "Wireframes", color: "#3b82f6", href: "/projects/4" },
+  { id: "5", name: "AAA", color: "#f43f5e", href: "/projects/5" },
+  { id: "6", name: "BBB", color: "#0ea5e9", href: "/projects/6" },
 ];
 
 export default function Sidebar() {
   const pathname = usePathname();
-  const [project, setProject] = useState<IProject[]>([]);
+  const [projects, setProjects] = useState<IProject[]>([]);
+  const [collapsed, setCollapsed] = useState(false);
 
-  useEffect (() => {
-
-  }, [])
+  useEffect(() => {
+    const fetchProject = async () => {
+      try {
+        // const response = await getProject();
+        setProjects(mockProjects);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchProject();
+  }, []);
 
   return (
-    <Container>
-      <Logo>
-        <h1>Taskio</h1>
-      </Logo>
+    <Container $collapsed={collapsed}>
+      <ToggleButton onClick={() => setCollapsed(!collapsed)}>
+        {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+      </ToggleButton>
+
+      <Logo>{collapsed ? "T" : "Taskio"}</Logo>
+
       <TopSection>
+
         <Nav>
           {menu.map((item) => {
             const Icon = item.icon;
@@ -52,64 +69,89 @@ export default function Sidebar() {
               <NavItem key={item.name} $active={isActive}>
                 <Link href={item.href}>
                   <Icon size={18} />
-                  <span>{item.name}</span>
+                  {!collapsed && <span>{item.name}</span>}
                 </Link>
               </NavItem>
             );
           })}
         </Nav>
 
-        <ProjectSection>
-          <Title>MY PROJECTS</Title>
+        {!collapsed && (
+          <ProjectSection>
+            <Title>MY PROJECTS</Title>
 
-          {projects.map((project) => (
-            <ProjectItem key={project.name}>
-              <ProjectLeft>
-                <ColorDot style={{ background: project.color }} />
-                <span>{project.name}</span>
-              </ProjectLeft>
-              <MoreHorizontal size={16} />
-            </ProjectItem>
-          ))}
-        </ProjectSection>
-        <BottomCard>
-          <LightBulb>💡</LightBulb>
-          <h4>Thoughts Time</h4>
-          <p>
-            We don’t have any notice for you, till then you can share your
-            thoughts with your peers.
-          </p>
-          <button>Write a message</button>
-        </BottomCard>
+            <ProjectList>
+              {projects.map((project) => (
+                <Link key={project.id} href={project.href}>
+                  <ProjectItem>
+                    <ProjectLeft>
+                      <ColorDot style={{ background: project.color }} />
+                      <span>{project.name}</span>
+                    </ProjectLeft>
+
+                    <MoreHorizontal size={16} />
+                  </ProjectItem>
+                </Link>
+              ))}
+            </ProjectList>
+          </ProjectSection>
+        )}
+
+        {!collapsed && (
+          <BottomCard>
+            <LightBulb>💡</LightBulb>
+            <h4>Thoughts Time</h4>
+            <p>
+              We don’t have any notice for you, till then you can share your
+              thoughts with your peers.
+            </p>
+            <button>Write a message</button>
+          </BottomCard>
+        )}
       </TopSection>
     </Container>
   );
 }
 
-const Container = styled.aside`
-  width: 260px;
+const Container = styled.aside<{ $collapsed: boolean }>`
+  width: ${(props) => (props.$collapsed ? "80px" : "260px")};
   height: 100vh;
-  background: #ffffff;
+  background: white;
   border-right: 1px solid #ccc;
   display: flex;
   flex-direction: column;
+  position: relative;
+  transition: width 0.25s ease;
 `;
 
-const TopSection = styled.div`
-  padding: 16px;
+const ToggleButton = styled.button`
+  position: absolute;
+  top: 22px;
+  right: 8px;
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  color: #000;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 const Logo = styled.div`
-  display: flex;
-  align-items: center;
   padding: 24px;
-  color: #333;
+  font-size: 18px;
+  font-weight: 600;
+  color: #000;
   border-bottom: 1px solid #ccc;
+`;
 
-  h1 {
-    font-size: 18px;
-    font-weight: 600;
-  }
+const TopSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 16px;
+  min-height: 0;
 `;
 
 const Nav = styled.nav`
@@ -118,7 +160,7 @@ const Nav = styled.nav`
   gap: 6px;
   padding-bottom: 16px;
   margin-bottom: 16px;
-  border-bottom: 1px solid #ccc;
+  border-bottom: 1px solid #eee;
 `;
 
 const NavItem = styled.div<{ $active: boolean }>`
@@ -128,30 +170,45 @@ const NavItem = styled.div<{ $active: boolean }>`
     gap: 12px;
     padding: 10px 12px;
     font-size: 14px;
+    border-radius: 6px;
     text-decoration: none;
+
     color: ${({ $active }) => ($active ? "#7c3aed" : "#333")};
     background: ${({ $active }) =>
-      $active ? "rgba(124, 58, 237, 0.08)" : "transparent"};
-    font-weight: ${({ $active }) => ($active ? 500 : 400)};
-    transition: 0.2s;
+      $active ? "rgba(124,58,237,0.08)" : "transparent"};
   }
 
   a:hover {
-    background: rgba(0, 0, 0, 0.04);
+    background: #f5f5f5;
   }
 `;
 
 const ProjectSection = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  margin-bottom: 16px;
+  flex: 1;
+  min-height: 0;
 `;
 
 const Title = styled.p`
   font-size: 12px;
-  color: #333;
+  color: #888;
   margin-bottom: 12px;
+`;
+
+const ProjectList = styled.div`
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: #000;
+
+  &::-webkit-scrollbar {
+    width: 0px;
+  }
+
+  scrollbar-width: none;
 `;
 
 const ProjectItem = styled.div`
@@ -161,9 +218,7 @@ const ProjectItem = styled.div`
   padding: 8px 10px;
   border-radius: 6px;
   font-size: 14px;
-  color: #333;
   cursor: pointer;
-  transition: 0.2s;
 
   &:hover {
     background: #f9fafb;
@@ -187,28 +242,25 @@ const BottomCard = styled.div`
   padding: 18px;
   border-radius: 14px;
   text-align: center;
+  margin-top: auto;
 
   h4 {
     margin: 10px 0 6px;
     font-size: 14px;
-    color: #333;
-    font-weight: 600;
   }
 
   p {
     font-size: 12px;
-    color: #ccc;
+    color: #888;
     margin-bottom: 12px;
   }
 
   button {
-    background: #fff;
+    background: white;
     padding: 6px 12px;
     border-radius: 6px;
     font-size: 12px;
-    color: #333;
     cursor: pointer;
-    transition: 0.2s;
   }
 
   button:hover {
@@ -218,11 +270,13 @@ const BottomCard = styled.div`
 `;
 
 const LightBulb = styled.div`
-  font-size: 22px;
-  padding: 4px;
-  border-radius: 50%;
   width: 48px;
   height: 48px;
-  margin: auto;
-  background-color: #f5f4e8;
+  border-radius: 50%;
+  font-size: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 6px;
+  background: #f5f4e8;
 `;
