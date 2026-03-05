@@ -3,10 +3,23 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { signUp } from "@/lib/services/auth.service";
-import styled from "styled-components";
 import Signup from "../../public/images/signup.svg";
 import Image from "next/image";
 import { AxiosError } from "axios";
+import { Eye, EyeOff } from "lucide-react";
+import {
+  Wrapper,
+  Container,
+  Title,
+  Input,
+  Button,
+  ImageWrapper,
+  AuthRedirect,
+  PasswordWrapper,
+  ErrorMessage,
+  Icon,
+  Form
+} from "@/styles/auth.style";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -16,11 +29,36 @@ export default function SignupPage() {
   const [lastName, setLastName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [confirmPassword, setConfirmPassword] = useState<string>("");
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [showConfirmPassword, setShowConfirmPassword] =
+    useState<boolean>(false);
 
   const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     setError("");
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailRegex.test(email)) {
+      setError("Please enter a valid email address.");
+      setLoading(false);
+      return;
+    }
+
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters long.");
+      setLoading(false);
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setError("Passwords do not match.");
+      setLoading(false);
+      return;
+    }
+
     if (!firstName || !lastName || !email || !password) {
       setError("Please fill in all fields.");
       setLoading(false);
@@ -70,12 +108,28 @@ export default function SignupPage() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
-          <Input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
+          <PasswordWrapper>
+            <Input
+              type={showPassword ? "text" : "password"}
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <Icon onClick={() => setShowPassword(!showPassword)}>
+              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+            </Icon>
+          </PasswordWrapper>
+          <PasswordWrapper>
+            <Input
+              type={showConfirmPassword ? "text" : "password"}
+              placeholder="Confirm Password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+            />
+            <Icon onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
+              {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+            </Icon>
+          </PasswordWrapper>
           <Button
             type="submit"
             disabled={loading || !firstName || !lastName || !email || !password}
@@ -88,107 +142,9 @@ export default function SignupPage() {
               Sign In
             </button>
           </AuthRedirect>
+          {error && <ErrorMessage>{error}</ErrorMessage>}
         </Form>
-        {error && <p style={{ color: "red" }}>{error}</p>}
       </Container>
     </Wrapper>
   );
 }
-
-const Wrapper = styled.div`
-  background: url("/images/background.jpg") no-repeat center fixed;
-  background-size: cover;
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  padding: 1rem;
-
-  .dark & {
-    background:
-      linear-gradient(rgba(5, 8, 22, 0.8), rgba(5, 8, 22, 0.8)),
-      url("/images/background.jpg") no-repeat center fixed;
-    background-size: cover;
-  }
-`;
-
-const Container = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 2rem;
-`;
-
-const Title = styled.h1`
-  margin: 0 auto;
-`;
-
-const Form = styled.form`
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  width: 300px;
-`;
-
-const Input = styled.input`
-  padding: 0.6rem;
-  border: 1px solid #000;
-  border-radius: 6px;
-  font-size: 1rem;
-  outline: none;
-  background: #fff;
-  color: #000;
-
-  &:focus {
-    border-color: #000;
-    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
-  }
-`;
-
-const Button = styled.button`
-  padding: 0.6rem;
-  background: #2563eb;
-  color: #fff;
-  border-radius: 6px;
-  border: none;
-  cursor: pointer;
-  transition: 0.2s ease;
-
-  &:hover {
-    opacity: 0.85;
-  }
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-`;
-
-const ImageWrapper = styled.div`
-  @media (max-width: 768px) {
-    display: none;
-  }
-`;
-
-const AuthRedirect = styled.div`
-  margin: 1rem auto 0;
-  font-size: 0.9rem;
-  color: #fff;
-  gap: 0.5rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  button {
-    background: none;
-    border: none;
-    padding: 0;
-    cursor: pointer;
-    color: #fff;
-    text-decoration: underline;
-
-    &:hover {
-      opacity: 0.7;
-    }
-  }
-`;
