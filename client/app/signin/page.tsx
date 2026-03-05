@@ -2,11 +2,25 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import styled from "styled-components";
 import Signin from "../../public/images/signin.svg";
 import Image from "next/image";
 import { signIn } from "../../lib/services/auth.service";
 import { AxiosError } from "axios";
+import { Eye, EyeOff } from "lucide-react";
+import {
+  Wrapper,
+  Container,
+  ImageWrapper,
+  Form,
+  Title,
+  Input,
+  PasswordWrapper,
+  Icon,
+  FormOptions,
+  Button,
+  AuthRedirect,
+  ErrorMessage,
+} from "@/styles/auth.style";
 
 export default function SigninPage() {
   const router = useRouter();
@@ -15,6 +29,7 @@ export default function SigninPage() {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [rememberMe, setRememberMe] = useState<boolean>(false);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
 
   const handleSignin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -60,12 +75,17 @@ export default function SigninPage() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
-          <Input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
+          <PasswordWrapper>
+            <Input
+              type={showPassword ? "text" : "password"}
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <Icon onClick={() => setShowPassword(!showPassword)}>
+              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+            </Icon>
+          </PasswordWrapper>
           <FormOptions>
             <div>
               <input
@@ -91,134 +111,9 @@ export default function SigninPage() {
               Sign Up
             </button>
           </AuthRedirect>
+          {error && <ErrorMessage>{error}</ErrorMessage>}
         </Form>
-        {error && <p style={{ color: "red" }}>{error}</p>}
       </Container>
     </Wrapper>
   );
 }
-
-const Wrapper = styled.div`
-  background: url("/images/background.jpg") no-repeat center fixed;
-  background-size: cover;
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  padding: 1rem;
-
-  .dark & {
-    background:
-      linear-gradient(rgba(5, 8, 22, 0.8), rgba(5, 8, 22, 0.8)),
-      url("/images/background.jpg") no-repeat center fixed;
-    background-size: cover;
-  }
-`;
-
-const Container = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 2rem;
-`;
-
-const Title = styled.h1`
-  margin: 0 auto;
-`;
-
-const Form = styled.form`
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  width: 300px;
-`;
-
-const Input = styled.input`
-  padding: 0.6rem;
-  border: 1px solid #000;
-  border-radius: 6px;
-  font-size: 1rem;
-  outline: none;
-  background: #fff;
-  color: #000;
-
-  &:focus {
-    border-color: #000;
-    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
-  }
-`;
-
-const Button = styled.button`
-  padding: 0.6rem;
-  background: #2563eb;
-  color: #fff;
-  border-radius: 6px;
-  border: none;
-  cursor: pointer;
-  transition: 0.2s ease;
-
-  &:hover {
-    opacity: 0.85;
-  }
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-`;
-
-const FormOptions = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 0.9rem;
-  color: #fff;
-
-  div {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  button {
-    background: none;
-    border: none;
-    padding: 0;
-    cursor: pointer;
-    color: #fff;
-    text-decoration: underline;
-
-    &:hover {
-      opacity: 0.7;
-    }
-  }
-`;
-
-const ImageWrapper = styled.div`
-  @media (max-width: 768px) {
-    display: none;
-  }
-`;
-
-const AuthRedirect = styled.div`
-  margin: 1rem auto 0;
-  font-size: 0.9rem;
-  color: #fff;
-  gap: 0.5rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  button {
-    background: none;
-    border: none;
-    padding: 0;
-    cursor: pointer;
-    color: #fff;
-    text-decoration: underline;
-
-    &:hover {
-      opacity: 0.7;
-    }
-  }
-`;
