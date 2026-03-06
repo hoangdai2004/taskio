@@ -1,6 +1,6 @@
-export interface IProject {
-    id: string;
-    name: string;
-    color: string;
-    href: string;
+export interface SidebarProject {
+  id: number;
+  name: string;
+  slug: string;
+  color: string;
 }

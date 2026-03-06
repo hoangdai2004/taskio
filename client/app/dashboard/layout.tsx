@@ -35,7 +35,7 @@ const RightSection = styled.div`
 
 const Main = styled.main`
   flex: 1;
-  padding: 32px;
-  background: #fff;
+  background-color: #fff;
+  color: #000;
   overflow-y: auto;
 `;

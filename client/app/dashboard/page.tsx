@@ -81,7 +81,7 @@ export default function Dashboard() {
                 <strong>Design meeting</strong>
                 <small>Apr 26</small>
               </div>
-              <Badge danger>Today</Badge>
+              <Badge $danger>Today</Badge>
             </TaskItem>
 
             <TaskItem>
@@ -90,7 +90,7 @@ export default function Dashboard() {
                 <strong>Launch campaign</strong>
                 <small>Apr 27</small>
               </div>
-              <Badge danger>Overdue</Badge>
+              <Badge $danger>Overdue</Badge>
             </TaskItem>
 
             <TaskItem>
@@ -164,6 +164,7 @@ export default function Dashboard() {
 const Wrapper = styled.div`
   display: flex;
   min-height: 100vh;
+  padding: 32px;
 `;
 
 const Main = styled.main`
@@ -194,7 +195,7 @@ const PrimaryButton = styled.button`
   background: #6366f1;
   color: white;
   padding: 10px 18px;
-  border-radius: 12px;
+  border-radius: 6px;
   border: none;
   cursor: pointer;
 `;
@@ -202,7 +203,7 @@ const PrimaryButton = styled.button`
 const OutlineButton = styled.button`
   background: white;
   padding: 10px 18px;
-  border-radius: 12px;
+  border-radius: 6px;
   border: 1px solid #ddd;
   cursor: pointer;
 `;
@@ -252,12 +253,12 @@ const TaskItem = styled.div`
   }
 `;
 
-const Badge = styled.div<{ danger?: boolean }>`
+const Badge = styled.div<{ $danger?: boolean }>`
   padding: 6px 10px;
   border-radius: 8px;
   font-size: 12px;
-  background: ${(p) => (p.danger ? "#fee2e2" : "#e0e7ff")};
-  color: ${(p) => (p.danger ? "#ef4444" : "#6366f1")};
+  background: ${(p) => (p.$danger ? "#fee2e2" : "#e0e7ff")};
+  color: ${(p) => (p.$danger ? "#ef4444" : "#6366f1")};
 `;
 
 const PanelHeader = styled.div`
