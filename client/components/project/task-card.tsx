@@ -2,6 +2,7 @@
 
 import styled from "styled-components";
 import { Task, Priority as PriorityType } from "@/types/project.type";
+import { MessageSquareMore, FileMinus, Ellipsis } from "lucide-react";
 
 interface Props {
   task: Task;
@@ -15,32 +16,52 @@ export default function TaskCard({ task }: Props) {
 
   return (
     <Card draggable onDragStart={handleDragStart}>
-      <Priority $type={task.priority}>{task.priority}</Priority>
+      <Header>
+        <Priority $type={task.priority}>{task.priority}</Priority>
+      <IconEllipsis />
+      </Header>
+      
 
       <Title>{task.title}</Title>
       <Desc>{task.desc}</Desc>
 
       <Bottom>
-        <Info>
-          💬 {task.comments} | 📁 {task.files}
-        </Info>
-
         <Users>
           {task.assignees.map((u) => (
             <Avatar key={u.id} src={u.avatar} alt={u.name} />
           ))}
         </Users>
+        <Info>
+          <Item>
+            <IconMessage />
+            {task.comments}
+          </Item>
+
+          <Item>
+            <IconFile />
+            {task.files}
+          </Item>
+        </Info>
       </Bottom>
     </Card>
   );
 }
 
+const Header = styled.div`
+  display: flex;
+  justify-content: space-between;
+`
+
+const IconEllipsis = styled(Ellipsis)`
+  color: #000;
+`
+
 const Card = styled.div`
   background: white;
-  border-radius: 12px;
+  border-radius: 6px;
   padding: 14px;
   cursor: grab;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
 
   &:active {
     cursor: grabbing;
@@ -48,13 +69,14 @@ const Card = styled.div`
 `;
 
 const Title = styled.h4`
+  color: #000;
   margin: 6px 0;
   font-size: 14px;
 `;
 
 const Desc = styled.p`
   font-size: 13px;
-  color: #666;
+  color: #000;
 `;
 
 const Bottom = styled.div`
@@ -65,8 +87,26 @@ const Bottom = styled.div`
 `;
 
 const Info = styled.div`
+  display: flex;
+  gap: 12px;
   font-size: 12px;
-  color: #777;
+  color: #000;
+`;
+
+const Item = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 4px;
+`;
+
+const IconMessage = styled(MessageSquareMore)`
+  width: 14px;
+  height: 14px;
+`;
+
+const IconFile = styled(FileMinus)`
+  width: 14px;
+  height: 14px;
 `;
 
 const Users = styled.div`
@@ -86,10 +126,9 @@ const Priority = styled.span<{ $type: PriorityType }>`
   padding: 3px 8px;
   border-radius: 6px;
 
+  color: ${({ $type }) =>
+    $type === "high" ? "#d92d20" : $type === "medium" ? "#b54708" : "#067647"};
+
   background: ${({ $type }) =>
-    $type === "high"
-      ? "#ffd6d6"
-      : $type === "medium"
-      ? "#fff0c2"
-      : "#e6f5e6"};
+    $type === "high" ? "#ffe4e4" : $type === "medium" ? "#fff3d6" : "#e8f8ef"};
 `;

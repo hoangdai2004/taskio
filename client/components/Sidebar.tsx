@@ -14,28 +14,25 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { IProject } from "@/types/sidebar.type";
+import { SidebarProject } from "@/types/sidebar.type";
 
 const menu = [
-  { name: "Home", href: "/", icon: Home },
-  { name: "Messages", href: "/messages", icon: MessageSquare },
-  { name: "Tasks", href: "/tasks", icon: CheckSquare },
-  { name: "Members", href: "/members", icon: Users },
-  { name: "Settings", href: "/settings", icon: Settings },
+  { name: "Home", href: "/dashboard", icon: Home },
+  { name: "Messages", href: "/dashboard/messages", icon: MessageSquare },
+  { name: "Tasks", href: "/dashboard/tasks", icon: CheckSquare },
+  { name: "Members", href: "/dashboard/members", icon: Users },
+  { name: "Settings", href: "/dashboard/settings", icon: Settings },
 ];
 
-const mockProjects: IProject[] = [
-  { id: "1", name: "Mobile App", color: "#22c55e", href: "/dashboard/project/1" },
-  { id: "2", name: "Website Redesign", color: "#eab308", href: "/project/2" },
-  { id: "3", name: "Design System", color: "#a855f7", href: "/projects/3" },
-  { id: "4", name: "Wireframes", color: "#3b82f6", href: "/projects/4" },
-  { id: "5", name: "AAA", color: "#f43f5e", href: "/projects/5" },
-  { id: "6", name: "BBB", color: "#0ea5e9", href: "/projects/6" },
+const mockProjects: SidebarProject[] = [
+  { id: 1, name: "Mobile App", slug: "mobile-app", color: "#22c55e" },
+  { id: 2, name: "Website Redesign", slug: "website-redesign", color: "#eab308" },
+  { id: 3, name: "Design System", slug: "design-system", color: "#a855f7" },
+  { id: 4, name: "Wireframes", slug: "wireframes", color: "#3b82f6" },
 ];
-
 export default function Sidebar() {
   const pathname = usePathname();
-  const [projects, setProjects] = useState<IProject[]>([]);
+  const [projects, setProjects] = useState<SidebarProject[]>([]);
   const [collapsed, setCollapsed] = useState(false);
 
   useEffect(() => {
@@ -80,19 +77,24 @@ export default function Sidebar() {
           <ProjectSection>
             <Title>MY PROJECTS</Title>
 
-            <ProjectList>
-              {projects.map((project) => (
-                <Link key={project.id} href={project.href}>
-                  <ProjectItem>
-                    <ProjectLeft>
-                      <ColorDot style={{ background: project.color }} />
-                      <span>{project.name}</span>
-                    </ProjectLeft>
+           <ProjectList>
+              {projects.map((project) => {
+                const href = `/dashboard/project/${project.slug}`;
+                const isActive = pathname === href;
 
-                    <MoreHorizontal size={16} />
-                  </ProjectItem>
-                </Link>
-              ))}
+                return (
+                  <Link key={project.id} href={href}>
+                    <ProjectItem $active={isActive}>
+                      <ProjectLeft>
+                        <ColorDot style={{ background: project.color }} />
+                        <span>{project.name}</span>
+                      </ProjectLeft>
+
+                      <MoreHorizontal size={16} />
+                    </ProjectItem>
+                  </Link>
+                );
+              })}
             </ProjectList>
           </ProjectSection>
         )}
@@ -173,7 +175,7 @@ const NavItem = styled.div<{ $active: boolean }>`
     border-radius: 6px;
     text-decoration: none;
 
-    color: ${({ $active }) => ($active ? "#7c3aed" : "#333")};
+    color: ${({ $active }) => ($active ? "#2563eb" : "#333")};
     background: ${({ $active }) =>
       $active ? "rgba(124,58,237,0.08)" : "transparent"};
   }
@@ -211,7 +213,7 @@ const ProjectList = styled.div`
   scrollbar-width: none;
 `;
 
-const ProjectItem = styled.div`
+const ProjectItem = styled.div<{ $active?: boolean }>`
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -219,6 +221,9 @@ const ProjectItem = styled.div`
   border-radius: 6px;
   font-size: 14px;
   cursor: pointer;
+
+  background: ${({ $active }) =>
+    $active ? "rgba(124,58,237,0.08)" : "transparent"};
 
   &:hover {
     background: #f9fafb;

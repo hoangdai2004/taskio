@@ -29,6 +29,7 @@ export interface Column {
 export interface Project {
   id: number;
   name: string;
+  slug: string;
 
   members: User[];
 

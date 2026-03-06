@@ -7,78 +7,41 @@ import {
   MessageSquare,
   Bell,
   ChevronDown,
+  Settings,
+  CheckSquare,
+  LogOut,
+  User
 } from "lucide-react";
 import Image from "next/image";
-import { useState, useEffect } from "react";
-import { IUser, INotification, ISearchResult } from "@/types/header.type";
-import {
-  getNotifications,
-  getUserInfo,
-  search,
-} from "@/lib/services/header.service";
+import { useState, useEffect, useRef } from "react";
 
 export default function Header() {
-  const [user, setUser] = useState<IUser | null>(null);
-  const [notifications, setNotifications] = useState<INotification[]>([]);
-  const [results, setResults] = useState<ISearchResult[]>([]);
-  const [keyword, setKeyword] = useState<string>("");
+
+  const [openMenu, setOpenMenu] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const getHeaderData = async () => {
-      try {
-        const [userData, notificationData] = await Promise.all([
-          getUserInfo(),
-          getNotifications(),
-        ]);
-
-        setUser(userData);
-        setNotifications(notificationData);
-      } catch (error) {
-        console.error("Error fetching header data:", error);
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setOpenMenu(false);
       }
     };
 
-    getHeaderData();
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, []);
-
-  useEffect(() => {
-    const trimmed = keyword.trim();
-
-    if (!trimmed) return;
-
-    const delay = setTimeout(async () => {
-      try {
-        const data = await search(trimmed);
-        setResults(data);
-      } catch (error) {
-        console.error("Search error:", error);
-      }
-    }, 400);
-
-    return () => clearTimeout(delay);
-  }, [keyword]);
-
-  const unreadCount = notifications.filter((n) => !n.isRead).length;
 
   return (
     <Wrapper>
+
       <Left>
         <SearchBox>
           <Search size={18} />
-          <input
-            placeholder="Search for anything..."
-            value={keyword}
-            onChange={(e) => setKeyword(e.target.value)}
-          />
+          <input placeholder="Search..." />
         </SearchBox>
-
-        {results.length > 0 && (
-          <SearchDropdown>
-            {results.map((item) => (
-              <SearchItem key={item.id}>{item.title}</SearchItem>
-            ))}
-          </SearchDropdown>
-        )}
       </Left>
 
       <Right>
@@ -90,141 +53,155 @@ export default function Header() {
           <MessageSquare size={20} />
         </Icon>
 
-        <Icon style={{ position: "relative" }}>
+        <Icon>
           <Bell size={20} />
-          {unreadCount > 0 && <Badge>{unreadCount}</Badge>}
         </Icon>
 
-        <User>
-          <UserInfo>
-            <Name>{user?.name ?? "Guest"}</Name>
-            <Location>{user?.location ?? "India"}</Location>
-          </UserInfo>
+        <UserWrapper ref={menuRef}>
+          <UserBox onClick={() => setOpenMenu(!openMenu)}>
+            <Avatar>
+              <Image
+                src="/images/avatar.jpg"
+                alt="avatar"
+                width={36}
+                height={36}
+              />
+            </Avatar>
 
-          <Avatar>
-            <Image
-              src={user?.avatar || "/images/avatar.jpg"}
-              alt="avatar"
-              width={36}
-              height={36}
-            />
-          </Avatar>
+            <ChevronDown size={16} />
+          </UserBox>
 
-          <ChevronDown size={16} />
-        </User>
+          {openMenu && (
+            <UserMenu>
+              <MenuItem>
+                <User size={16} />
+                Profile
+              </MenuItem>
+
+              <MenuItem>
+                <Settings size={16} />
+                Settings
+              </MenuItem>
+
+              <MenuItem>
+                <CheckSquare size={16} />
+                My Tasks
+              </MenuItem>
+
+              <Divider />
+
+              <MenuItem $danger>
+                <LogOut size={16} />
+                Sign out
+              </MenuItem>
+            </UserMenu>
+          )}
+        </UserWrapper>
+
       </Right>
     </Wrapper>
   );
 }
 
 const Wrapper = styled.header`
-  width: 100%;
   height: 76px;
-  padding: 0 2rem;
-  background: #fff;
+  background: white;
   border-bottom: 1px solid #ccc;
+  color: #000;
   display: flex;
   align-items: center;
   justify-content: space-between;
+
+  padding: 0 30px;
 `;
 
 const Left = styled.div`
   flex: 1;
-  position: relative;
+`;
+
+const Right = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 22px;
 `;
 
 const SearchBox = styled.div`
-  width: 420px;
-  max-width: 100%;
+  width: 350px;
   display: flex;
   align-items: center;
-  gap: 0.7rem;
-  color: #333;
-  background: #f5f5f5;
-  padding: 0.8rem 1.2rem;
-  border-radius: 6px;
+  gap: 10px;
+
+  background: #f3f4f6;
+  padding: 10px 14px;
+  border-radius: 8px;
 
   input {
     border: none;
     outline: none;
     background: transparent;
     width: 100%;
-    font-size: 0.95rem;
   }
-`;
-
-const SearchDropdown = styled.div`
-  position: absolute;
-  top: 60px;
-  width: 420px;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-  overflow: hidden;
-`;
-
-const SearchItem = styled.div`
-  padding: 0.8rem 1rem;
-  cursor: pointer;
-
-  &:hover {
-    background: #f1f5f9;
-  }
-`;
-
-const Right = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 1.8rem;
 `;
 
 const Icon = styled.div`
-  color: #333;
   cursor: pointer;
-  transition: 0.2s ease;
 
   &:hover {
     color: #2563eb;
-    transform: translateY(-2px);
   }
 `;
 
-const Badge = styled.span`
-  position: absolute;
-  top: -6px;
-  right: -8px;
-  background: #ef4444;
-  color: white;
-  font-size: 0.65rem;
-  padding: 2px 6px;
-  border-radius: 999px;
+const UserWrapper = styled.div`
+  position: relative;
 `;
 
-const User = styled.div`
+const UserBox = styled.div`
   display: flex;
   align-items: center;
-  gap: 0.8rem;
+  gap: 8px;
   cursor: pointer;
-`;
-
-const UserInfo = styled.div`
-  text-align: right;
-  color: #333;
-`;
-
-const Name = styled.p`
-  font-size: 0.9rem;
-  font-weight: 600;
-  margin: 0;
-`;
-
-const Location = styled.p`
-  font-size: 0.75rem;
-  color: #333;
-  margin: 0;
 `;
 
 const Avatar = styled.div`
   border-radius: 50%;
   overflow: hidden;
+`;
+
+const UserMenu = styled.div`
+  position: absolute;
+  top: 50px;
+  right: 0;
+
+  width: 180px;
+  background: white;
+  border-radius: 10px;
+
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+  padding: 6px;
+
+  z-index: 10;
+`;
+
+const MenuItem = styled.div<{ $danger?: boolean }>`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  padding: 10px 12px;
+  font-size: 14px;
+  border-radius: 6px;
+
+  cursor: pointer;
+
+  color: ${(p) => (p.$danger ? "#ef4444" : "#333")};
+
+  &:hover {
+    background: #f3f4f6;
+  }
+`;
+
+const Divider = styled.div`
+  height: 1px;
+  background: #eee;
+  margin: 6px 0;
 `;

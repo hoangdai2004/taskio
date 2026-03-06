@@ -20,8 +20,8 @@ export default function ProjectBoard({ tasks }: Props) {
   const handleDrop = (taskId: number, newStatus: Status) => {
     setTaskList((prev) =>
       prev.map((task) =>
-        task.id === taskId ? { ...task, status: newStatus } : task
-      )
+        task.id === taskId ? { ...task, status: newStatus } : task,
+      ),
     );
   };
 
