@@ -38,14 +38,21 @@ export default function TaskItem({
     </Card>
   );
 }
+
 const Card = styled.div`
-  background: white;
+  background: ${({ theme }) => theme.colors.card};
+
   border-radius: 12px;
+
   padding: 16px 18px;
+
   display: flex;
+
   justify-content: space-between;
-  border: 1px solid #eee;
-  transition: 0.2s;
+
+  border: 1px solid ${({ theme }) => theme.colors.border};
+
+  transition: all 0.2s ease;
 
   &:hover {
     box-shadow: 0 8px 20px rgba(0,0,0,0.05);
@@ -54,70 +61,101 @@ const Card = styled.div`
 
 const Left = styled.div`
   display: flex;
+
   gap: 12px;
+
+  align-items: flex-start;
 `;
 
 const Checkbox = styled.input`
   width: 18px;
+  height: 18px;
+
+  margin-top: 2px;
+
+  cursor: pointer;
 `;
 
 const Info = styled.div`
   display: flex;
+
   flex-direction: column;
 `;
 
 const TaskTitle = styled.div`
   font-weight: 600;
+
   font-size: 15px;
+
+  color: ${({ theme }) => theme.colors.textPrimary};
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 10px;
 `;
 
 const ProjectTag = styled.span`
-  margin-left: 10px;
   font-size: 12px;
-  background: #eef0ff;
+
+  background: ${({ theme }) => theme.colors.primaryLight};
+
+  color: ${({ theme }) => theme.colors.primary};
+
   padding: 3px 8px;
+
   border-radius: 6px;
 `;
 
 const Desc = styled.div`
   font-size: 13px;
-  color: #777;
+
+  color: ${({ theme }) => theme.colors.textMuted};
 `;
 
 const Right = styled.div`
   display: flex;
+
   align-items: center;
+
   gap: 14px;
 `;
 
 const Date = styled.div`
   font-size: 13px;
-  color: #777;
+
+  color: ${({ theme }) => theme.colors.textSecondary};
 `;
 
 const Priority = styled.div<{ priority: string }>`
   font-size: 12px;
+
   padding: 4px 8px;
+
   border-radius: 6px;
 
-  background: ${({ priority }) =>
+  background: ${({ priority, theme }) =>
     priority === "High"
-      ? "#ffe5e5"
+      ? `${theme.colors.danger}20`
       : priority === "Medium"
-      ? "#fff4db"
-      : "#e6f7ed"};
+      ? `${theme.colors.warning}20`
+      : `${theme.colors.success}20`};
 
-  color: ${({ priority }) =>
+  color: ${({ priority, theme }) =>
     priority === "High"
-      ? "#e03131"
+      ? theme.colors.danger
       : priority === "Medium"
-      ? "#d97706"
-      : "#2f9e44"};
+      ? theme.colors.warning
+      : theme.colors.success};
 `;
 
 const Avatar = styled.div`
   width: 32px;
+
   height: 32px;
+
   border-radius: 50%;
-  background: #ddd;
+
+  background: ${({ theme }) => theme.colors.borderLight};
 `;

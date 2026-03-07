@@ -16,7 +16,6 @@ import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
 
 export default function Header() {
-
   const [openMenu, setOpenMenu] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -36,26 +35,25 @@ export default function Header() {
 
   return (
     <Wrapper>
-
       <Left>
         <SearchBox>
           <Search size={18} />
-          <input placeholder="Search..." />
+          <input placeholder="Search tasks, projects..." />
         </SearchBox>
       </Left>
 
       <Right>
-        <Icon>
+        <IconButton>
           <CalendarDays size={20} />
-        </Icon>
+        </IconButton>
 
-        <Icon>
+        <IconButton>
           <MessageSquare size={20} />
-        </Icon>
+        </IconButton>
 
-        <Icon>
+        <IconButton>
           <Bell size={20} />
-        </Icon>
+        </IconButton>
 
         <UserWrapper ref={menuRef}>
           <UserBox onClick={() => setOpenMenu(!openMenu)}>
@@ -97,57 +95,86 @@ export default function Header() {
             </UserMenu>
           )}
         </UserWrapper>
-
       </Right>
     </Wrapper>
   );
 }
 
 const Wrapper = styled.header`
-  height: 76px;
-  background: white;
-  border-bottom: 1px solid #ccc;
-  color: #000;
+  height: 77px;
+
+  background: linear-gradient(90deg, #1e3a8a, #1e40af);
+
   display: flex;
   align-items: center;
   justify-content: space-between;
 
-  padding: 0 30px;
+  padding: 0 32px;
+
+  color: white;
+
+  border-bottom: 1px solid rgba(255,255,255,0.15);
+  backdrop-filter: blur(10px);
 `;
 
 const Left = styled.div`
-  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 30px;
 `;
 
 const Right = styled.div`
   display: flex;
   align-items: center;
-  gap: 22px;
+  gap: 18px;
 `;
 
 const SearchBox = styled.div`
-  width: 350px;
+  width: 340px;
+
   display: flex;
   align-items: center;
   gap: 10px;
 
-  background: #f3f4f6;
+  background: rgba(255,255,255,0.15);
+
   padding: 10px 14px;
-  border-radius: 8px;
+
+  border-radius: 10px;
+
+  backdrop-filter: blur(8px);
 
   input {
     border: none;
     outline: none;
     background: transparent;
     width: 100%;
+
+    font-size: 14px;
+    color: white;
+
+    ::placeholder {
+      color: rgba(255,255,255,0.7);
+    }
   }
 `;
 
-const Icon = styled.div`
+const IconButton = styled.div`
+  width: 36px;
+  height: 36px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 8px;
+
   cursor: pointer;
 
+  transition: 0.2s;
+
   &:hover {
-    color: #2563eb;
+    background: rgba(255,255,255,0.2);
   }
 `;
 
@@ -159,7 +186,16 @@ const UserBox = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
+
+  padding: 4px 6px;
+
+  border-radius: 8px;
+
   cursor: pointer;
+
+  &:hover {
+    background: rgba(255,255,255,0.2);
+  }
 `;
 
 const Avatar = styled.div`
@@ -169,17 +205,22 @@ const Avatar = styled.div`
 
 const UserMenu = styled.div`
   position: absolute;
+
   top: 50px;
   right: 0;
 
-  width: 180px;
-  background: white;
+  width: 200px;
+
+  background: ${({ theme }) => theme.colors.card};
+  color: ${({ theme }) => theme.colors.textSecondary};
+
   border-radius: 10px;
 
-  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+
   padding: 6px;
 
-  z-index: 10;
+  z-index: 100;
 `;
 
 const MenuItem = styled.div<{ $danger?: boolean }>`
@@ -188,20 +229,22 @@ const MenuItem = styled.div<{ $danger?: boolean }>`
   gap: 10px;
 
   padding: 10px 12px;
-  font-size: 14px;
+
   border-radius: 6px;
 
+  font-size: 14px;
   cursor: pointer;
 
-  color: ${(p) => (p.$danger ? "#ef4444" : "#333")};
+  color: ${({ theme, $danger }) =>
+    $danger ? theme.colors.danger : theme.colors.textSecondary};
 
   &:hover {
-    background: #f3f4f6;
+    background: ${({ theme }) => theme.colors.borderLight};
   }
 `;
 
 const Divider = styled.div`
   height: 1px;
-  background: #eee;
+  background: ${({ theme }) => theme.colors.border};
   margin: 6px 0;
 `;

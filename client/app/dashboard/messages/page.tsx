@@ -24,10 +24,13 @@ const Container = styled.div`
   display: grid;
   grid-template-columns: 260px 1fr;
   height: 100%;
-  background: #f7f8fa;
+
+  background: ${({ theme }) => theme.colors.borderLight};
 `;
 
 const ChatArea = styled.div`
   display: flex;
   flex-direction: column;
+
+  background: ${({ theme }) => theme.colors.card};
 `;

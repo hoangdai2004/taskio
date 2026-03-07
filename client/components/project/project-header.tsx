@@ -112,14 +112,18 @@ const Right = styled.div`
 const Title = styled.h1`
   font-size: 32px;
   font-weight: 700;
-  color: #1d1b34;
+
+  color: ${({ theme }) => theme.colors.textPrimary};
 `;
 
 const IconBtn = styled.div`
   width: 28px;
   height: 28px;
-  background: #ece9ff;
-  color: #2563eb;
+
+  background: ${({ theme }) => theme.colors.borderLight};
+
+  color: ${({ theme }) => theme.colors.primary};
+
   border-radius: 6px;
 
   display: flex;
@@ -138,7 +142,9 @@ const Invite = styled.button`
   border: none;
 
   font-weight: 500;
-  color: #2563eb;
+
+  color: ${({ theme }) => theme.colors.primary};
+
   cursor: pointer;
 `;
 
@@ -149,8 +155,11 @@ const Members = styled.div`
 const Avatar = styled.img`
   width: 30px;
   height: 30px;
+
   border-radius: 50%;
-  border: 2px solid white;
+
+  border: 2px solid ${({ theme }) => theme.colors.card};
+
   margin-left: -6px;
 `;
 
@@ -159,14 +168,17 @@ const Button = styled.button`
   align-items: center;
   gap: 6px;
 
-  background: white;
-  border: 1px solid #ddd;
+  background: ${({ theme }) => theme.colors.card};
+
+  border: 1px solid ${({ theme }) => theme.colors.border};
+
   border-radius: 8px;
 
   padding: 6px 12px;
 
   font-size: 13px;
-  color: #444;
+
+  color: ${({ theme }) => theme.colors.textSecondary};
 
   cursor: pointer;
 `;
@@ -174,14 +186,16 @@ const Button = styled.button`
 const Divider = styled.div`
   width: 1px;
   height: 20px;
-  background: #ddd;
+
+  background: ${({ theme }) => theme.colors.border};
 `;
 
 const IconSquare = styled.div`
   width: 32px;
   height: 32px;
 
-  background: #2563eb;
+  background: ${({ theme }) => theme.colors.primary};
+
   color: white;
 
   border-radius: 6px;

@@ -36,27 +36,45 @@ export default function SettingsSidebar() {
 
 const Sidebar = styled.div`
   width: 240px;
-  background: white;
-  border-right: 1px solid #eee;
+
+  background: ${({ theme }) => theme.colors.card};
+
+  border-right: 1px solid ${({ theme }) => theme.colors.border};
+
   padding: 20px;
 `;
 
 const Item = styled.div<{ active?: boolean }>`
   display: flex;
+
   align-items: center;
+
   gap: 10px;
 
   padding: 10px 12px;
+
   border-radius: 8px;
+
   margin-bottom: 6px;
 
   font-size: 14px;
+
   cursor: pointer;
 
-  background: ${(p) => (p.active ? "#eef3ff" : "transparent")};
-  color: ${(p) => (p.active ? "#3b82f6" : "#555")};
+  transition: all 0.2s ease;
+
+  background: ${({ active, theme }) =>
+    active ? theme.colors.primaryLight : "transparent"};
+
+  color: ${({ active, theme }) =>
+    active ? theme.colors.primary : theme.colors.textSecondary};
 
   &:hover {
-    background: #f3f4f6;
+    background: ${({ theme }) => theme.colors.borderLight};
+  }
+
+  svg {
+    color: ${({ active, theme }) =>
+      active ? theme.colors.primary : theme.colors.textMuted};
   }
 `;

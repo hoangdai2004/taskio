@@ -1,132 +1,97 @@
 import styled from "styled-components";
 
 export const Wrapper = styled.div`
-  background: url("/images/background.jpg") no-repeat center fixed;
-  background-size: cover;
+  width: 100%;
+  min-height: 100vh;
+
+  background:
+    linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.35)),
+    url("/images/background.jpg") center/cover no-repeat;
 
   display: flex;
-  justify-content: center;
   align-items: center;
-  min-height: 100vh;
-  padding: 1rem;
-
-  .dark & {
-    background:
-      linear-gradient(rgba(5, 8, 22, 0.8), rgba(5, 8, 22, 0.8)),
-      url("/images/background.jpg") no-repeat center fixed;
-    background-size: cover;
-  }
+  justify-content: center;
 `;
 
 export const Container = styled.div`
+  width: 950px;
+  background: ${({ theme }) => theme.colors.card};
+
   display: flex;
-  align-items: center;
-  gap: 2rem;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  padding: 2rem;
-  border-radius: 12px;
-`;
+  border-radius: 14px;
+  overflow: hidden;
 
-export const Title = styled.h1`
-  margin: 0 auto;
-`;
+  box-shadow: 0 25px 50px rgba(0,0,0,0.12);
 
-export const Form = styled.form`
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  width: 300px;
-`;
-
-export const FormOptions = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 0.9rem;
-  color: #fff;
-
-  div {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  button {
-    background: none;
-    border: none;
-    padding: 0;
-    cursor: pointer;
-    color: #fff;
-    text-decoration: underline;
-
-    &:hover {
-      opacity: 0.7;
-    }
-  }
-`;
-
-export const Input = styled.input`
-  padding: 0.6rem 2.5rem 0.6rem 0.6rem;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 1rem;
-  outline: none;
-  background: #fff;
-  color: #000;
-  width: 100%;
-
-  &:focus {
-    border-color: #2563eb;
-    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
-  }
-`;
-
-export const Button = styled.button`
-  padding: 0.6rem;
-  background: #2563eb;
-  color: #fff;
-  border-radius: 6px;
-  border: none;
-  cursor: pointer;
-  transition: 0.2s ease;
-
-  &:hover {
-    opacity: 0.85;
-  }
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
+  @media (max-width: 768px) {
+    width: 100%;
+    margin: 20px;
   }
 `;
 
 export const ImageWrapper = styled.div`
+  flex: 1;
+
+  background: linear-gradient(
+    135deg,
+    ${({ theme }) => theme.colors.primary},
+    ${({ theme }) => theme.colors.primaryHover}
+  );
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+
+  img {
+    width: 100%;
+    max-width: 360px;
+    height: auto;
+  }
+
   @media (max-width: 768px) {
     display: none;
   }
 `;
 
-export const AuthRedirect = styled.div`
-  margin: 1rem auto 0;
-  font-size: 0.9rem;
-  color: #fff;
-  gap: 0.5rem;
+export const Form = styled.form`
+  flex: 1;
+  padding: 50px;
+
   display: flex;
+  flex-direction: column;
+  gap: 18px;
   justify-content: center;
-  align-items: center;
+`;
 
-  button {
-    background: none;
-    border: none;
-    padding: 0;
-    cursor: pointer;
-    color: #fff;
-    text-decoration: underline;
+export const Title = styled.h2`
+  font-size: 28px;
+  font-weight: 700;
+  color: ${({ theme }) => theme.colors.textPrimary};
+  margin-bottom: 10px;
+`;
 
-    &:hover {
-      opacity: 0.7;
-    }
+export const Input = styled.input`
+  width: 100%;
+  padding: 12px 14px;
+
+  border-radius: 8px;
+  border: 1px solid ${({ theme }) => theme.colors.border};
+
+  font-size: 14px;
+  color: ${({ theme }) => theme.colors.textPrimary};
+  background: white;
+
+  transition: 0.2s;
+
+  &:hover {
+    border-color: ${({ theme }) => theme.colors.borderLight};
+  }
+
+  &:focus {
+    outline: none;
+    border-color: ${({ theme }) => theme.colors.primary};
+    box-shadow: 0 0 0 2px rgba(37,99,235,0.2);
   }
 `;
 
@@ -137,21 +102,102 @@ export const PasswordWrapper = styled.div`
 
 export const Icon = styled.div`
   position: absolute;
-  right: 10px;
+
+  right: 12px;
   top: 50%;
+
   transform: translateY(-50%);
   cursor: pointer;
-  color: #888;
-  display: flex;
-  align-items: center;
+
+  color: ${({ theme }) => theme.colors.textMuted};
 
   &:hover {
-    color: #2563eb;
+    color: ${({ theme }) => theme.colors.primary};
   }
 `;
 
-export const ErrorMessage = styled.p`
-  color: #ef4444;
-  font-size: 0.85rem;
+export const FormOptions = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  font-size: 14px;
+  color: ${({ theme }) => theme.colors.textSecondary};
+
+  div {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+
+  button {
+    background: none;
+    border: none;
+
+    color: ${({ theme }) => theme.colors.primary};
+    cursor: pointer;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+`;
+
+export const Button = styled.button`
+  width: 100%;
+  padding: 12px;
+
+  border-radius: 8px;
+  border: none;
+
+  background: ${({ theme }) => theme.colors.primary};
+  color: white;
+
+  font-weight: 600;
+  font-size: 15px;
+
+  cursor: pointer;
+  transition: 0.2s;
+
+  &:hover {
+    background: ${({ theme }) => theme.colors.primaryHover};
+  }
+
+  &:disabled {
+    background: ${({ theme }) => theme.colors.primaryLight};
+    cursor: not-allowed;
+  }
+`;
+
+export const AuthRedirect = styled.div`
+  text-align: center;
+  font-size: 14px;
+  color: ${({ theme }) => theme.colors.textSecondary};
+
+  button {
+    background: none;
+    border: none;
+
+    margin-left: 6px;
+
+    color: ${({ theme }) => theme.colors.primary};
+    font-weight: 600;
+
+    cursor: pointer;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+`;
+
+export const ErrorMessage = styled.div`
+  background: #fee2e2;
+  color: ${({ theme }) => theme.colors.danger};
+
+  padding: 10px;
+  border-radius: 6px;
+
+  font-size: 14px;
   text-align: center;
 `;

@@ -7,11 +7,12 @@ import {
   AlertTriangle,
   User,
 } from "lucide-react";
-import DonutChart from "../../components/DonutChart";
-import StatCard from "@/components/StartCard";
+import DonutChart from "@/components/home/DonutChart";
+import StatCard from "@/components/home/StartCard";
+import { colors } from "@/styles/colors";
 
 const chartData = [
-  { label: "Completed", value: 12, color: "#10b981" },
+  { label: "Completed", value: 12, color: "#22c55e" },
   { label: "In Progress", value: 8, color: "#0ea5e9" },
   { label: "Pending", value: 3, color: "#f59e0b" },
   { label: "Overdue", value: 4, color: "#ef4444" },
@@ -66,6 +67,7 @@ export default function Dashboard() {
               <PanelTitle>Task Overview</PanelTitle>
               <FilterButton>This Week</FilterButton>
             </PanelHeader>
+
             <DonutChart data={chartData} />
           </Panel>
 
@@ -110,6 +112,7 @@ export default function Dashboard() {
               <PanelTitle>Task Overview</PanelTitle>
               <FilterButton>This Week</FilterButton>
             </PanelHeader>
+
             <DonutChart data={chartData} />
           </Panel>
 
@@ -165,52 +168,80 @@ const Wrapper = styled.div`
   display: flex;
   min-height: 100vh;
   padding: 32px;
+
+  background: ${colors.background};
 `;
 
 const Main = styled.main`
+  width: 100%;
 `;
 
 const Header = styled.div`
   display: flex;
   justify-content: space-between;
+  align-items: center;
+
   margin-bottom: 40px;
 `;
 
 const Title = styled.h2`
   font-size: 28px;
   font-weight: 600;
-  color: #000;
+
+  color: ${colors.textPrimary};
 `;
 
 const Subtitle = styled.p`
-  color: #000;
+  margin-top: 4px;
+
+  color: ${colors.textSecondary};
 `;
 
 const ButtonGroup = styled.div`
   display: flex;
-  gap: 16px;
+  gap: 14px;
 `;
 
 const PrimaryButton = styled.button`
-  background: #6366f1;
+  background: ${colors.primary};
   color: white;
+
   padding: 10px 18px;
-  border-radius: 6px;
+
+  border-radius: 8px;
   border: none;
+
+  font-weight: 500;
+
   cursor: pointer;
+  transition: 0.2s;
+
+  &:hover {
+    background: ${colors.primaryHover};
+  }
 `;
 
 const OutlineButton = styled.button`
-  background: white;
+  background: ${colors.card};
+  color: ${colors.textPrimary};
+
   padding: 10px 18px;
-  border-radius: 6px;
-  border: 1px solid #ddd;
+
+  border-radius: 8px;
+  border: 1px solid ${colors.border};
+
   cursor: pointer;
+  transition: 0.2s;
+
+  &:hover {
+    background: ${colors.primaryLight};
+  }
 `;
 
 const CardGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+
   gap: 24px;
   margin-bottom: 40px;
 `;
@@ -218,27 +249,68 @@ const CardGrid = styled.div`
 const SectionGrid = styled.div`
   display: grid;
   grid-template-columns: 2fr 1fr;
+
   gap: 24px;
   margin-bottom: 24px;
 `;
 
 const Panel = styled.div`
-  background: white;
-  color: #000;
-  padding: 30px;
-  border-radius: 20px;
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.05);
+  background: ${colors.card};
+  color: ${colors.textPrimary};
+
+  padding: 28px;
+
+  border-radius: 16px;
+  border: 1px solid ${colors.border};
+
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.04);
+`;
+
+const PanelHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  margin-bottom: 20px;
 `;
 
 const PanelTitle = styled.h3`
   font-size: 18px;
   font-weight: 600;
-  margin-bottom: 20px;
+`;
+
+const FilterButton = styled.button`
+  background: ${colors.primaryLight};
+  color: ${colors.primary};
+
+  border: none;
+
+  padding: 6px 12px;
+
+  border-radius: 8px;
+
+  font-size: 12px;
+  font-weight: 500;
+
+  cursor: pointer;
+`;
+
+const ViewAll = styled.span`
+  font-size: 12px;
+
+  color: ${colors.primary};
+
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+  }
 `;
 
 const TaskItem = styled.div`
   display: flex;
   align-items: center;
+
   gap: 12px;
   margin-bottom: 18px;
 
@@ -246,55 +318,50 @@ const TaskItem = styled.div`
     flex: 1;
   }
 
+  strong {
+    font-size: 14px;
+  }
+
   small {
     display: block;
+
     font-size: 12px;
-    color: #6b7280;
+    margin-top: 2px;
+
+    color: ${colors.textMuted};
   }
 `;
 
 const Badge = styled.div<{ $danger?: boolean }>`
   padding: 6px 10px;
+
   border-radius: 8px;
-  font-size: 12px;
-  background: ${(p) => (p.$danger ? "#fee2e2" : "#e0e7ff")};
-  color: ${(p) => (p.$danger ? "#ef4444" : "#6366f1")};
-`;
 
-const PanelHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-`;
-
-const FilterButton = styled.button`
-  background: #e0e7ff;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 8px;
   font-size: 12px;
-  cursor: pointer;
-`;
+  font-weight: 500;
 
-const ViewAll = styled.span`
-  font-size: 12px;
-  color: #6366f1;
-  cursor: pointer;
+  background: ${({ $danger }) =>
+    $danger ? colors.danger + "20" : colors.primaryLight};
+
+  color: ${({ $danger }) => ($danger ? colors.danger : colors.primary)};
 `;
 
 const ActivityItem = styled.div`
   display: flex;
   gap: 14px;
+
   margin-bottom: 18px;
+
   align-items: flex-start;
 `;
 
 const ActivityAvatar = styled.div`
   width: 36px;
   height: 36px;
+
   border-radius: 50%;
-  background: #e5e7eb;
+
+  background: ${colors.borderLight};
 `;
 
 const ActivityContent = styled.div`
@@ -303,16 +370,21 @@ const ActivityContent = styled.div`
   strong {
     font-size: 14px;
     display: block;
+
+    color: ${colors.textPrimary};
   }
 
   p {
     margin: 0;
+
     font-size: 13px;
-    color: #6b7280;
+
+    color: ${colors.textSecondary};
   }
 
   small {
     font-size: 12px;
-    color: #9ca3af;
+
+    color: ${colors.textMuted};
   }
 `;

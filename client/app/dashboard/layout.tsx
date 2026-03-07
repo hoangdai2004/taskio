@@ -24,6 +24,8 @@ const Wrapper = styled.div`
   display: flex;
   height: 100vh;
   overflow: hidden;
+
+  background: ${({ theme }) => theme.colors.background};
 `;
 
 const RightSection = styled.div`
@@ -35,7 +37,9 @@ const RightSection = styled.div`
 
 const Main = styled.main`
   flex: 1;
-  background-color: #fff;
-  color: #000;
+
+  background: ${({ theme }) => theme.colors.background};
+  color: ${({ theme }) => theme.colors.textPrimary};
+
   overflow-y: auto;
 `;

@@ -3,7 +3,8 @@
 import styled from "styled-components";
 import { Column as ColumnType, Task, Status } from "@/types/project.type";
 import TaskCard from "./task-card";
-import { Dot  } from "lucide-react";
+import { Dot } from "lucide-react";
+import { DefaultTheme } from "styled-components/dist/types";
 
 interface Props {
   column: ColumnType;
@@ -16,6 +17,8 @@ export default function Column({ column, tasks, onDropTask }: Props) {
 
   const handleDrop = (e: React.DragEvent) => {
     const taskId = Number(e.dataTransfer.getData("taskId"));
+    if (!taskId) return;
+
     onDropTask(taskId, column.id);
   };
 
@@ -36,56 +39,64 @@ export default function Column({ column, tasks, onDropTask }: Props) {
   );
 }
 
+const getStatusColor = (theme: DefaultTheme, status: Status) => {
+  switch (status) {
+    case "todo":
+      return theme.colors.primary;
+    case "progress":
+      return theme.colors.warning;
+    case "done":
+      return theme.colors.success;
+    default:
+      return theme.colors.primary;
+  }
+};
+
 const Wrapper = styled.div`
   width: 300px;
-  background: #f5f5f5;
+  background: ${({ theme }) => theme.colors.card};
   padding: 16px;
   border-radius: 6px;
+  border: 1px solid ${({ theme }) => theme.colors.border};
 
   display: flex;
   flex-direction: column;
   max-height: 80vh;
 `;
 
-const Header = styled.div<{ $status: string }>`
+const Header = styled.div<{ $status: Status }>`
   display: flex;
   align-items: center;
   gap: 4px;
   font-weight: 600;
-  color: #000;
+  color: ${({ theme }) => theme.colors.textPrimary};
   margin-bottom: 12px;
   padding-bottom: 6px;
+
   border-bottom: 3px solid
-    ${({ $status }) =>
-      $status === "todo"
-        ? "#2563eb"
-        : $status === "progress"
-          ? "#f5a623"
-          : "#34c759"};
+    ${({ theme, $status }) => getStatusColor(theme, $status)};
 `;
 
-const IDot = styled(Dot)<{ $status: string }>`
-  color: ${({ $status }) =>
-    $status === "todo"
-      ? "#2563eb"
-      : $status === "progress"
-        ? "#f5a623"
-        : "#34c759"};
+const IDot = styled(Dot)<{ $status: Status }>`
+  color: ${({ theme, $status }) => getStatusColor(theme, $status)};
 `;
 
 const TotalTask = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 4px;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background-color: #ccc;
+  margin-left: auto;
+
+  padding: 2px 8px;
+  border-radius: 12px;
+
+  font-size: 12px;
+  background: ${({ theme }) => theme.colors.borderLight};
+  color: ${({ theme }) => theme.colors.textSecondary};
 `;
 
 const TaskList = styled.div`
-  display: flex;  
+  display: flex;
   flex-direction: column;
   gap: 10px;
   overflow-y: auto;
