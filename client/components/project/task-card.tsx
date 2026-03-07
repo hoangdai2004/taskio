@@ -18,9 +18,8 @@ export default function TaskCard({ task }: Props) {
     <Card draggable onDragStart={handleDragStart}>
       <Header>
         <Priority $type={task.priority}>{task.priority}</Priority>
-      <IconEllipsis />
+        <IconEllipsis />
       </Header>
-      
 
       <Title>{task.title}</Title>
       <Desc>{task.desc}</Desc>
@@ -31,6 +30,7 @@ export default function TaskCard({ task }: Props) {
             <Avatar key={u.id} src={u.avatar} alt={u.name} />
           ))}
         </Users>
+
         <Info>
           <Item>
             <IconMessage />
@@ -50,18 +50,25 @@ export default function TaskCard({ task }: Props) {
 const Header = styled.div`
   display: flex;
   justify-content: space-between;
-`
+`;
 
 const IconEllipsis = styled(Ellipsis)`
-  color: #000;
-`
+  color: ${({ theme }) => theme.colors.textMuted};
+  cursor: pointer;
+`;
 
 const Card = styled.div`
-  background: white;
+  background: ${({ theme }) => theme.colors.card};
+
   border-radius: 6px;
+
   padding: 14px;
+
   cursor: grab;
+
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+
+  border: 1px solid ${({ theme }) => theme.colors.border};
 
   &:active {
     cursor: grabbing;
@@ -69,33 +76,44 @@ const Card = styled.div`
 `;
 
 const Title = styled.h4`
-  color: #000;
+  color: ${({ theme }) => theme.colors.textPrimary};
+
   margin: 6px 0;
+
   font-size: 14px;
 `;
 
 const Desc = styled.p`
   font-size: 13px;
-  color: #000;
+
+  color: ${({ theme }) => theme.colors.textSecondary};
 `;
 
 const Bottom = styled.div`
   display: flex;
+
   justify-content: space-between;
+
   align-items: center;
+
   margin-top: 12px;
 `;
 
 const Info = styled.div`
   display: flex;
+
   gap: 12px;
+
   font-size: 12px;
-  color: #000;
+
+  color: ${({ theme }) => theme.colors.textMuted};
 `;
 
 const Item = styled.div`
   display: flex;
+
   align-items: center;
+
   gap: 4px;
 `;
 
@@ -116,14 +134,19 @@ const Users = styled.div`
 const Avatar = styled.img`
   width: 22px;
   height: 22px;
+
   border-radius: 50%;
+
   margin-left: -5px;
-  border: 2px solid white;
+
+  border: 2px solid ${({ theme }) => theme.colors.card};
 `;
 
 const Priority = styled.span<{ $type: PriorityType }>`
   font-size: 11px;
+
   padding: 3px 8px;
+
   border-radius: 6px;
 
   color: ${({ $type }) =>

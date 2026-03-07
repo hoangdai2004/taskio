@@ -41,8 +41,11 @@ export default function ProjectBoard({ tasks }: Props) {
 
 const Board = styled.div`
   display: flex;
+
   gap: 20px;
+
   padding: 20px;
+
   overflow-x: auto;
 
   &::-webkit-scrollbar {
@@ -50,7 +53,8 @@ const Board = styled.div`
   }
 
   &::-webkit-scrollbar-thumb {
-    background: #ddd;
+    background: ${({ theme }) => theme.colors.border};
+
     border-radius: 6px;
   }
 `;

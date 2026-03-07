@@ -1,0 +1,150 @@
+# 🚀 Taskio - Task Management Web App
+
+Taskio is a modern **task management and collaboration web application** that helps teams organize projects, manage tasks, and communicate efficiently.
+
+The application allows users to create projects, manage tasks with drag-and-drop boards, and collaborate with team members in real-time.
+
+---
+
+# ✨ Features
+
+### 📋 Project Management
+
+* Create and manage multiple projects
+* Organize tasks within each project
+* Invite team members to collaborate
+
+### 🧩 Kanban Task Board
+
+* Drag & drop tasks between columns
+* Task status workflow:
+
+  * **Backlog**
+  * **To Do**
+  * **In Progress**
+  * **Done**
+
+### 📝 Task Management
+
+* Create tasks
+* Set priority levels (Low, Medium, High)
+* Assign tasks to members
+* Track task progress
+
+### 📅 Personal Task Page
+
+* View all your tasks across projects
+* Filter tasks by:
+
+  * Today
+  * Completed
+  * Project
+  * Priority
+
+### 💬 Team Messaging
+
+* Chat with project members
+* Discuss tasks and updates inside projects
+
+---
+
+# 🖥️ UI Pages
+
+| Page          | Description              |
+| ------------- | ------------------------ |
+| Home          | Overview dashboard       |
+| Tasks         | Personal task management |
+| Project Board | Kanban drag & drop board |
+| Messages      | Team communication       |
+| Members       | Project team members     |
+
+---
+
+# 🛠️ Tech Stack
+
+Frontend:
+
+* **Next.js**
+* **TypeScript**
+* **Styled Components**
+* **React**
+
+UI / Icons:
+
+* **Lucide Icons**
+
+---
+
+# 📂 Project Structure
+
+```
+client
+│
+├── app
+│   ├── dashboard
+│   │   ├── tasks
+│   │   ├── project
+│   │   ├── messages
+│
+├── components
+│   ├── tasks
+│   │   ├── task-item.tsx
+│   │   ├── task-card.tsx
+│   │
+│   ├── project
+│   │   ├── column.tsx
+│   │   ├── project-board.tsx
+│
+├── types
+│   └── project.type.ts
+```
+
+---
+
+# ⚡ Getting Started
+
+### 1️⃣ Clone repository
+
+```bash
+git clone https://github.com/your-username/taskio.git
+```
+
+---
+
+### 2️⃣ Install dependencies
+
+```bash
+npm install
+```
+
+---
+
+### 3️⃣ Run development server
+
+```bash
+npm run dev
+```
+
+Then open:
+
+```
+http://localhost:3000
+```
+
+---
+
+# 📌 Future Improvements
+
+* Task comments
+* Real-time updates (WebSocket)
+* Notifications
+* File attachments
+* Mobile responsive layout
+
+---
+
+# 👨‍💻 Author
+
+Built with ❤️ by **Dai**
+
+Frontend Developer

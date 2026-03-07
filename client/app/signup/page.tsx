@@ -3,10 +3,11 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { signUp } from "@/lib/services/auth.service";
-import Signup from "../../public/images/signup.svg";
+import Signup from "@/public/images/signup.svg";
 import Image from "next/image";
 import { AxiosError } from "axios";
 import { Eye, EyeOff } from "lucide-react";
+
 import {
   Wrapper,
   Container,
@@ -18,62 +19,70 @@ import {
   PasswordWrapper,
   ErrorMessage,
   Icon,
-  Form
+  Form,
 } from "@/styles/auth.style";
 
 export default function SignupPage() {
   const router = useRouter();
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string>("");
-  const [firstName, setFirstName] = useState<string>("");
-  const [lastName, setLastName] = useState<string>("");
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [confirmPassword, setConfirmPassword] = useState<string>("");
-  const [showPassword, setShowPassword] = useState<boolean>(false);
-  const [showConfirmPassword, setShowConfirmPassword] =
-    useState<boolean>(false);
+
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setLoading(true);
-    setError("");
+
+    const fName = firstName.trim();
+    const lName = lastName.trim();
+    const mail = email.trim();
+    const pass = password.trim();
+    const confirm = confirmPassword.trim();
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    if (!emailRegex.test(email)) {
-      setError("Please enter a valid email address.");
-      setLoading(false);
-      return;
-    }
-
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters long.");
-      setLoading(false);
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      setError("Passwords do not match.");
-      setLoading(false);
-      return;
-    }
-
-    if (!firstName || !lastName || !email || !password) {
+    if (!fName || !lName || !mail || !pass || !confirm) {
       setError("Please fill in all fields.");
-      setLoading(false);
       return;
     }
+
+    if (!emailRegex.test(mail)) {
+      setError("Please enter a valid email address.");
+      return;
+    }
+
+    if (pass.length < 6) {
+      setError("Password must be at least 6 characters long.");
+      return;
+    }
+
+    if (pass !== confirm) {
+      setError("Passwords do not match.");
+      return;
+    }
+
+    setLoading(true);
+    setError("");
+
     try {
       const response = await signUp({
-        firstName,
-        lastName,
-        email,
-        password,
+        firstName: fName,
+        lastName: lName,
+        email: mail,
+        password: pass,
       });
+
       alert(response.data.message);
 
-      router.push("/dashboard");
+      router.replace("/dashboard");
     } catch (error) {
       const err = error as AxiosError<{ message: string }>;
       setError(err.response?.data?.message || "Signup failed.");
@@ -88,60 +97,105 @@ export default function SignupPage() {
         <ImageWrapper>
           <Image src={Signup} alt="Signup Image" width={400} height={400} />
         </ImageWrapper>
+
         <Form onSubmit={handleSignup}>
           <Title>Sign Up</Title>
+
           <Input
             type="text"
             placeholder="First Name"
             value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
+            disabled={loading}
+            onChange={(e) => {
+              setFirstName(e.target.value);
+              setError("");
+            }}
           />
+
           <Input
             type="text"
             placeholder="Last Name"
             value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
+            disabled={loading}
+            onChange={(e) => {
+              setLastName(e.target.value);
+              setError("");
+            }}
           />
+
           <Input
             type="email"
             placeholder="Email"
+            autoComplete="email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            disabled={loading}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              setError("");
+            }}
           />
+
           <PasswordWrapper>
             <Input
               type={showPassword ? "text" : "password"}
               placeholder="Password"
+              autoComplete="new-password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              disabled={loading}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                setError("");
+              }}
             />
-            <Icon onClick={() => setShowPassword(!showPassword)}>
+
+            <Icon onClick={() => !loading && setShowPassword(!showPassword)}>
               {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </Icon>
           </PasswordWrapper>
+
           <PasswordWrapper>
             <Input
               type={showConfirmPassword ? "text" : "password"}
               placeholder="Confirm Password"
+              autoComplete="new-password"
               value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
+              disabled={loading}
+              onChange={(e) => {
+                setConfirmPassword(e.target.value);
+                setError("");
+              }}
             />
-            <Icon onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
+
+            <Icon
+              onClick={() =>
+                !loading && setShowConfirmPassword(!showConfirmPassword)
+              }
+            >
               {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </Icon>
           </PasswordWrapper>
+
           <Button
             type="submit"
-            disabled={loading || !firstName || !lastName || !email || !password}
+            disabled={
+              loading ||
+              !firstName ||
+              !lastName ||
+              !email ||
+              !password ||
+              !confirmPassword
+            }
           >
             {loading ? "Signing up..." : "Sign Up"}
           </Button>
+
           <AuthRedirect>
             Already have an account?
             <button type="button" onClick={() => router.push("/signin")}>
               Sign In
             </button>
           </AuthRedirect>
+
           {error && <ErrorMessage>{error}</ErrorMessage>}
         </Form>
       </Container>

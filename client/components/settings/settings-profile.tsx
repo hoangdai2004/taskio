@@ -66,66 +66,137 @@ const Wrapper = styled.div`
 
 const Title = styled.h1`
   font-size: 28px;
+
   margin-bottom: 20px;
+
+  color: ${({ theme }) => theme.colors.textPrimary};
 `;
 
 const Card = styled.div`
-  background: white;
+  background: ${({ theme }) => theme.colors.card};
+
   padding: 24px;
+
   border-radius: 10px;
-  border: 1px solid #eee;
+
+  border: 1px solid ${({ theme }) => theme.colors.border};
+
   margin-bottom: 24px;
 `;
 
 const SectionTitle = styled.h2`
   font-size: 18px;
+
   margin-bottom: 20px;
+
+  color: ${({ theme }) => theme.colors.textPrimary};
 `;
 
 const AvatarRow = styled.div`
   display: flex;
+
   align-items: center;
+
   gap: 16px;
+
   margin-bottom: 20px;
 `;
 
 const Avatar = styled.div`
   width: 64px;
+
   height: 64px;
-  background: #ddd;
+
+  background: ${({ theme }) => theme.colors.borderLight};
+
   border-radius: 50%;
+
+  border: 2px solid ${({ theme }) => theme.colors.border};
 `;
 
 const UploadBtn = styled.button`
-  border: 1px solid #ddd;
+  border: 1px solid ${({ theme }) => theme.colors.border};
+
   padding: 8px 14px;
+
   border-radius: 6px;
-  background: white;
+
+  background: ${({ theme }) => theme.colors.card};
+
+  color: ${({ theme }) => theme.colors.textSecondary};
+
+  cursor: pointer;
+
+  transition: background 0.2s ease;
+
+  &:hover {
+    background: ${({ theme }) => theme.colors.borderLight};
+  }
 `;
 
 const InputGroup = styled.div`
   display: flex;
+
   flex-direction: column;
+
   margin-bottom: 16px;
 
   label {
     font-size: 14px;
+
     margin-bottom: 6px;
+
+    color: ${({ theme }) => theme.colors.textSecondary};
   }
 
   input,
   select {
     padding: 10px;
+
     border-radius: 6px;
-    border: 1px solid #ddd;
+
+    border: 1px solid ${({ theme }) => theme.colors.border};
+
+    background: ${({ theme }) => theme.colors.card};
+
+    color: ${({ theme }) => theme.colors.textPrimary};
+
+    font-size: 14px;
+
+    transition: border 0.2s ease, box-shadow 0.2s ease;
+
+    &:focus {
+      outline: none;
+
+      border-color: ${({ theme }) => theme.colors.primary};
+
+      box-shadow: 0 0 0 2px ${({ theme }) => theme.colors.primaryLight};
+    }
   }
 `;
 
 const Button = styled.button<{ dark?: boolean }>`
   margin-top: 10px;
+
   padding: 10px 16px;
+
   border-radius: 6px;
 
-  background: ${(p) => (p.dark ? "#111" : "#2563eb")};
-  color: white;
+  border: none;
+
+  background: ${({ dark, theme }) =>
+    dark ? theme.colors.textPrimary : theme.colors.primary};
+
+  color: ${({ theme }) => theme.colors.card};
+
+  font-weight: 500;
+
+  cursor: pointer;
+
+  transition: background 0.2s ease;
+
+  &:hover {
+    background: ${({ dark, theme }) =>
+      dark ? theme.colors.textSecondary : theme.colors.primaryHover};
+  }
 `;

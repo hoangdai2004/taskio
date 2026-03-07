@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import Signin from "../../public/images/signin.svg";
+import Signin from "@/public/images/signin.svg";
 import Image from "next/image";
 import { signIn } from "../../lib/services/auth.service";
 import { AxiosError } from "axios";
@@ -33,26 +33,25 @@ export default function SigninPage() {
 
   const handleSignin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setLoading(true);
-    setError("");
+
     if (!email || !password) {
       setError("Please enter both email and password.");
-      setLoading(false);
       return;
     }
+
+    setLoading(true);
+    setError("");
+
     try {
       const response = await signIn({
-        email,
-        password,
+        email: email.trim(),
+        password: password.trim(),
       });
-      alert(response.message);
-      const token = response.token;
-      if (rememberMe) {
-        localStorage.setItem("token", token);
-      } else {
-        sessionStorage.setItem("token", token);
-      }
-      router.push("/dashboard");
+
+      const storage = rememberMe ? localStorage : sessionStorage;
+      storage.setItem("token", response.token);
+
+      router.replace("/dashboard");
     } catch (error) {
       const err = error as AxiosError<{ message: string }>;
       setError(err.response?.data?.message || "Sign in failed.");
@@ -73,16 +72,26 @@ export default function SigninPage() {
             type="email"
             placeholder="Email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            disabled={loading}
+            autoComplete="email"
+            onChange={(e) => {
+              setEmail(e.target.value);
+              setError("");
+            }}
           />
           <PasswordWrapper>
             <Input
               type={showPassword ? "text" : "password"}
               placeholder="Password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              disabled={loading}
+              autoComplete="password"
+              onChange={(e) => {
+                setPassword(e.target.value);
+                setError("");
+              }}
             />
-            <Icon onClick={() => setShowPassword(!showPassword)}>
+            <Icon onClick={() => !loading && setShowPassword(!showPassword)}>
               {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </Icon>
           </PasswordWrapper>
@@ -90,6 +99,7 @@ export default function SigninPage() {
             <div>
               <input
                 type="checkbox"
+                disabled={loading}
                 checked={rememberMe}
                 onChange={(e) => setRememberMe(e.target.checked)}
               />

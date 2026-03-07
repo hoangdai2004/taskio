@@ -30,8 +30,12 @@ export default function ChatMessages() {
 
 const Container = styled.div`
   flex: 1;
+
   padding: 20px;
+
   overflow-y: auto;
+
+  background: ${({ theme }) => theme.colors.card};
 `;
 
 const Message = styled.div`
@@ -40,9 +44,12 @@ const Message = styled.div`
 
 const User = styled.div`
   font-weight: 600;
+
   margin-bottom: 3px;
+
+  color: ${({ theme }) => theme.colors.textPrimary};
 `;
 
 const Text = styled.div`
-  color: #333;
+  color: ${({ theme }) => theme.colors.textSecondary};
 `;
