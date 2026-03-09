@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import styled from "styled-components";
-import ProjectMembers from "@/components/members/project-members";
+import ProjectMembers from "@/components/members/ProjectMembers";
 import { LogOut } from "lucide-react";
 
 interface Member {

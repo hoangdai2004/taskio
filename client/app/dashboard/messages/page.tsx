@@ -1,10 +1,10 @@
 "use client";
 
 import styled from "styled-components";
-import ChatInput from "@/components/messages/chat-input";
-import ChatHeader from "@/components/messages/chat-header";
-import ChatMessages from "@/components/messages/chat-messages";
-import ChatSidebar from "@/components/messages/chat-sidebar";
+import ChatInput from "@/components/messages/ChatInput";
+import ChatHeader from "@/components/messages/ChatHeader";
+import ChatMessages from "@/components/messages/ChatMessages";
+import ChatSidebar from "@/components/messages/ChatSidebar";
 
 export default function MessagesPage() {
   return (

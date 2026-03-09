@@ -4,8 +4,8 @@ import styled from "styled-components";
 import { useParams } from "next/navigation";
 
 import { Project } from "@/types/project.type";
-import ProjectHeader from "@/components/project/project-header";
-import ProjectBoard from "@/components/project/project-board";
+import ProjectHeader from "@/components/project/ProjectHeader";
+import ProjectBoard from "@/components/project/ProjectBoard";
 
 const mockProjects: Project[] = [
   {
@@ -121,7 +121,7 @@ const mockProjects: Project[] = [
 ];
 
 export default function ProjectPage() {
-  const { slug } = useParams();
+  const { slug } = useParams<{ slug: string }>();
 
   const project = mockProjects.find((p) => p.slug === slug);
 

@@ -7,22 +7,33 @@ import {
   MessageSquare,
   Bell,
   ChevronDown,
-  Settings,
-  CheckSquare,
-  LogOut,
-  User
 } from "lucide-react";
 import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
 
+import CalendarDropdown from "./header/CalendarDropDown";
+import { UserMenuDropdown } from "./header/UserMenuDropdown";
+import NotificationsDropdown from "./header/NotificationDropdown";
+import MessagesDropdown from "./header/MessagesDropdown";
+
+type DropdownType = "calendar" | "messages" | "notifications" | "user" | null;
+
 export default function Header() {
-  const [openMenu, setOpenMenu] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
+  const [openDropdown, setOpenDropdown] = useState<DropdownType>(null);
+
+  const wrapperRef = useRef<HTMLDivElement>(null);
+
+  const toggle = (type: DropdownType) => {
+    setOpenDropdown((prev) => (prev === type ? null : type));
+  };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setOpenMenu(false);
+      if (
+        wrapperRef.current &&
+        !wrapperRef.current.contains(event.target as Node)
+      ) {
+        setOpenDropdown(null);
       }
     };
 
@@ -34,7 +45,7 @@ export default function Header() {
   }, []);
 
   return (
-    <Wrapper>
+    <Wrapper ref={wrapperRef}>
       <Left>
         <SearchBox>
           <Search size={18} />
@@ -43,20 +54,39 @@ export default function Header() {
       </Left>
 
       <Right>
-        <IconButton>
-          <CalendarDays size={20} />
-        </IconButton>
+        <IconWrapper>
+          <IconButton onClick={() => toggle("calendar")}>
+            <CalendarDays size={20} />
+          </IconButton>
 
-        <IconButton>
-          <MessageSquare size={20} />
-        </IconButton>
+          {openDropdown === "calendar" && (
+            <CalendarDropdown
+              events={[
+                { time: "10:00", title: "Design meeting" },
+                { time: "14:00", title: "Sprint planning" },
+              ]}
+            />
+          )}
+        </IconWrapper>
 
-        <IconButton>
-          <Bell size={20} />
-        </IconButton>
+        <IconWrapper>
+          <IconButton onClick={() => toggle("messages")}>
+            <MessageSquare size={20} />
+          </IconButton>
 
-        <UserWrapper ref={menuRef}>
-          <UserBox onClick={() => setOpenMenu(!openMenu)}>
+          {openDropdown === "messages" && <MessagesDropdown />}
+        </IconWrapper>
+
+        <IconWrapper>
+          <IconButton onClick={() => toggle("notifications")}>
+            <Bell size={20} />
+          </IconButton>
+
+          {openDropdown === "notifications" && <NotificationsDropdown />}
+        </IconWrapper>
+
+        <UserWrapper>
+          <UserBox onClick={() => toggle("user")}>
             <Avatar>
               <Image
                 src="/images/avatar.jpg"
@@ -66,34 +96,15 @@ export default function Header() {
               />
             </Avatar>
 
+            <div>
+              <UserName>Dai Hoang</UserName>
+              <Location>Viet Nam</Location>
+            </div>
+
             <ChevronDown size={16} />
           </UserBox>
 
-          {openMenu && (
-            <UserMenu>
-              <MenuItem>
-                <User size={16} />
-                Profile
-              </MenuItem>
-
-              <MenuItem>
-                <Settings size={16} />
-                Settings
-              </MenuItem>
-
-              <MenuItem>
-                <CheckSquare size={16} />
-                My Tasks
-              </MenuItem>
-
-              <Divider />
-
-              <MenuItem $danger>
-                <LogOut size={16} />
-                Sign out
-              </MenuItem>
-            </UserMenu>
-          )}
+          {openDropdown === "user" && <UserMenuDropdown />}
         </UserWrapper>
       </Right>
     </Wrapper>
@@ -102,7 +113,6 @@ export default function Header() {
 
 const Wrapper = styled.header`
   height: 77px;
-
   background: linear-gradient(90deg, #1e3a8a, #1e40af);
 
   display: flex;
@@ -110,17 +120,14 @@ const Wrapper = styled.header`
   justify-content: space-between;
 
   padding: 0 32px;
-
   color: white;
 
-  border-bottom: 1px solid rgba(255,255,255,0.15);
-  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
 `;
 
 const Left = styled.div`
   display: flex;
   align-items: center;
-  gap: 30px;
 `;
 
 const Right = styled.div`
@@ -129,34 +136,8 @@ const Right = styled.div`
   gap: 18px;
 `;
 
-const SearchBox = styled.div`
-  width: 340px;
-
-  display: flex;
-  align-items: center;
-  gap: 10px;
-
-  background: rgba(255,255,255,0.15);
-
-  padding: 10px 14px;
-
-  border-radius: 10px;
-
-  backdrop-filter: blur(8px);
-
-  input {
-    border: none;
-    outline: none;
-    background: transparent;
-    width: 100%;
-
-    font-size: 14px;
-    color: white;
-
-    ::placeholder {
-      color: rgba(255,255,255,0.7);
-    }
-  }
+const IconWrapper = styled.div`
+  position: relative;
 `;
 
 const IconButton = styled.div`
@@ -168,13 +149,38 @@ const IconButton = styled.div`
   justify-content: center;
 
   border-radius: 8px;
-
   cursor: pointer;
 
   transition: 0.2s;
 
   &:hover {
-    background: rgba(255,255,255,0.2);
+    background: rgba(255, 255, 255, 0.2);
+  }
+`;
+
+const SearchBox = styled.div`
+  width: 340px;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  background: rgba(255, 255, 255, 0.15);
+  padding: 10px 14px;
+
+  border-radius: 10px;
+
+  input {
+    border: none;
+    outline: none;
+    background: transparent;
+
+    width: 100%;
+    color: white;
+
+    ::placeholder {
+      color: rgba(255, 255, 255, 0.7);
+    }
   }
 `;
 
@@ -187,15 +193,7 @@ const UserBox = styled.div`
   align-items: center;
   gap: 8px;
 
-  padding: 4px 6px;
-
-  border-radius: 8px;
-
   cursor: pointer;
-
-  &:hover {
-    background: rgba(255,255,255,0.2);
-  }
 `;
 
 const Avatar = styled.div`
@@ -203,48 +201,12 @@ const Avatar = styled.div`
   overflow: hidden;
 `;
 
-const UserMenu = styled.div`
-  position: absolute;
-
-  top: 50px;
-  right: 0;
-
-  width: 200px;
-
-  background: ${({ theme }) => theme.colors.card};
-  color: ${({ theme }) => theme.colors.textSecondary};
-
-  border-radius: 10px;
-
-  box-shadow: 0 12px 30px rgba(0,0,0,0.15);
-
-  padding: 6px;
-
-  z-index: 100;
-`;
-
-const MenuItem = styled.div<{ $danger?: boolean }>`
-  display: flex;
-  align-items: center;
-  gap: 10px;
-
-  padding: 10px 12px;
-
-  border-radius: 6px;
-
+const UserName = styled.div`
   font-size: 14px;
-  cursor: pointer;
-
-  color: ${({ theme, $danger }) =>
-    $danger ? theme.colors.danger : theme.colors.textSecondary};
-
-  &:hover {
-    background: ${({ theme }) => theme.colors.borderLight};
-  }
+  font-weight: 600;
 `;
 
-const Divider = styled.div`
-  height: 1px;
-  background: ${({ theme }) => theme.colors.border};
-  margin: 6px 0;
+const Location = styled.div`
+  font-size: 12px;
+  opacity: 0.8;
 `;
