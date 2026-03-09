@@ -3,7 +3,7 @@
 import styled from "styled-components";
 import { useEffect, useState } from "react";
 import { Task, Status } from "@/types/project.type";
-import Column from "./column";
+import Column from "./Column"
 import { columns } from "@/constants/columns";
 
 interface Props {
@@ -12,6 +12,7 @@ interface Props {
 
 export default function ProjectBoard({ tasks }: Props) {
   const [taskList, setTaskList] = useState<Task[]>([]);
+  const [dragTaskId, setDragTaskId] = useState<number | null>(null);
 
   useEffect(() => {
     setTaskList(tasks);
@@ -20,9 +21,11 @@ export default function ProjectBoard({ tasks }: Props) {
   const handleDrop = (taskId: number, newStatus: Status) => {
     setTaskList((prev) =>
       prev.map((task) =>
-        task.id === taskId ? { ...task, status: newStatus } : task,
-      ),
+        task.id === taskId ? { ...task, status: newStatus } : task
+      )
     );
+
+    setDragTaskId(null);
   };
 
   return (
@@ -32,6 +35,8 @@ export default function ProjectBoard({ tasks }: Props) {
           key={col.id}
           column={col}
           tasks={taskList}
+          dragTaskId={dragTaskId}
+          setDragTaskId={setDragTaskId}
           onDropTask={handleDrop}
         />
       ))}

@@ -2,24 +2,31 @@
 
 import styled from "styled-components";
 import { Column as ColumnType, Task, Status } from "@/types/project.type";
-import TaskCard from "./task-card";
+import TaskCard from "./TaskCard";
 import { Dot } from "lucide-react";
-import { DefaultTheme } from "styled-components/dist/types";
+import { DefaultTheme } from "styled-components/dist/types";  
 
 interface Props {
   column: ColumnType;
   tasks: Task[];
+  dragTaskId: number | null;
+  setDragTaskId: (id: number) => void;
   onDropTask: (taskId: number, status: Status) => void;
 }
 
-export default function Column({ column, tasks, onDropTask }: Props) {
+export default function Column({
+  column,
+  tasks,
+  dragTaskId,
+  setDragTaskId,
+  onDropTask,
+}: Props) {
   const columnTasks = tasks.filter((task) => task.status === column.id);
 
-  const handleDrop = (e: React.DragEvent) => {
-    const taskId = Number(e.dataTransfer.getData("taskId"));
-    if (!taskId) return;
+  const handleDrop = () => {
+    if (!dragTaskId) return;
 
-    onDropTask(taskId, column.id);
+    onDropTask(dragTaskId, column.id);
   };
 
   return (
@@ -32,7 +39,11 @@ export default function Column({ column, tasks, onDropTask }: Props) {
 
       <TaskList>
         {columnTasks.map((task) => (
-          <TaskCard key={task.id} task={task} />
+          <TaskCard
+            key={task.id}
+            task={task}
+            onDragStart={setDragTaskId}
+          />
         ))}
       </TaskList>
     </Wrapper>

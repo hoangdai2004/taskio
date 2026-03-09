@@ -1,7 +1,7 @@
 "use client";
 
 import styled from "styled-components";
-import TaskItem from "@/components/tasks/task-item";
+import TaskItem from "@/components/tasks/TaskItem";
 
 export default function TasksPage() {
   return (

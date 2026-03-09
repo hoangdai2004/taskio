@@ -6,12 +6,12 @@ import { MessageSquareMore, FileMinus, Ellipsis } from "lucide-react";
 
 interface Props {
   task: Task;
+  onDragStart: (id: number) => void;
 }
 
-export default function TaskCard({ task }: Props) {
-  const handleDragStart = (e: React.DragEvent<HTMLDivElement>) => {
-    e.dataTransfer.setData("taskId", String(task.id));
-    e.dataTransfer.effectAllowed = "move";
+export default function TaskCard({ task, onDragStart }: Props) {
+  const handleDragStart = () => {
+    onDragStart(task.id);
   };
 
   return (

@@ -82,7 +82,7 @@ export default function Sidebar() {
 
             <ProjectList>
               {projects.map((project) => {
-                const href = `/dashboard/project/${project.slug}`;
+                const href = `/dashboard/projects/${project.slug}`;
                 const isActive = pathname === href;
 
                 return (
