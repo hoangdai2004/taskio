@@ -21,7 +21,7 @@ export const UserMenuDropdown = () => {
 
       <Divider />
 
-      <MenuItem $danger onClick={() => router.replace("/signin")}>
+      <MenuItem $danger onClick={() => router.replace("/auth/signin")}>
         <LogOut size={16}/>
         Sign out
       </MenuItem>
