@@ -17,4 +17,7 @@ export const colors = {
   warning: "#f59e0b",
   danger: "#ef4444",
   info: "#0ea5e9",
+
+  review: "#facc15",
 };
+

@@ -6,7 +6,7 @@ import Signin from "@/public/images/signin.svg";
 import Image from "next/image";
 import { signIn } from "../../../lib/services/auth.service";
 import { AxiosError } from "axios";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, LoaderCircle } from "lucide-react";
 import {
   Wrapper,
   Container,
@@ -20,6 +20,8 @@ import {
   Button,
   AuthRedirect,
   ErrorMessage,
+  Label,
+  InputWrapper,
 } from "@/styles/auth.style";
 
 export default function SigninPage() {
@@ -34,22 +36,30 @@ export default function SigninPage() {
   const handleSignin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
     if (!email || !password) {
       setError("Please enter both email and password.");
       return;
     }
 
+    if (!emailRegex.test(email)) {
+      setError("Invalid email format");
+      return;
+    }
+
     setLoading(true);
-    setError("");
+    if (error) setError("");
 
     try {
       const response = await signIn({
         email: email.trim(),
-        password: password.trim(),
+        password: password,
       });
 
       const storage = rememberMe ? localStorage : sessionStorage;
-      storage.setItem("token", response.token);
+      storage.setItem("auth_token", response.token);
+      storage.setItem("user", JSON.stringify(response.user));
 
       router.replace("/dashboard");
     } catch (error) {
@@ -68,42 +78,57 @@ export default function SigninPage() {
         </ImageWrapper>
         <Form onSubmit={handleSignin}>
           <Title>Sign In</Title>
-          <Input
-            type="email"
-            placeholder="Email"
-            value={email}
-            disabled={loading}
-            autoComplete="email"
-            onChange={(e) => {
-              setEmail(e.target.value);
-              setError("");
-            }}
-          />
-          <PasswordWrapper>
+          <InputWrapper>
+            <Label htmlFor="email">Email</Label>
             <Input
-              type={showPassword ? "text" : "password"}
-              placeholder="Password"
-              value={password}
+              id="email"
+              type="email"
+              placeholder="Enter your email"
+              value={email}
               disabled={loading}
-              autoComplete="password"
+              autoComplete="email"
               onChange={(e) => {
-                setPassword(e.target.value);
+                setEmail(e.target.value);
                 setError("");
               }}
             />
-            <Icon onClick={() => !loading && setShowPassword(!showPassword)}>
-              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-            </Icon>
+          </InputWrapper>
+
+          <PasswordWrapper>
+            <InputWrapper>
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                placeholder="Enter your password"
+                value={password}
+                disabled={loading}
+                autoComplete="current-password"
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  setError("");
+                }}
+              />
+              <Icon
+                onClick={() => {
+                  if (!loading) setShowPassword((prev) => !prev);
+                }}
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </Icon>
+            </InputWrapper>
           </PasswordWrapper>
           <FormOptions>
             <div>
-              <input
-                type="checkbox"
-                disabled={loading}
-                checked={rememberMe}
-                onChange={(e) => setRememberMe(e.target.checked)}
-              />
-              <span>Remember me</span>
+              <label>
+                <input
+                  type="checkbox"
+                  disabled={loading}
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                />
+                <span>Remember me</span>
+              </label>
             </div>
             <button
               type="button"
@@ -113,7 +138,7 @@ export default function SigninPage() {
             </button>
           </FormOptions>
           <Button type="submit" disabled={loading || !email || !password}>
-            {loading ? "Signing in..." : "Sign In"}
+            {loading ? <LoaderCircle size={18} /> : "Sign In"}
           </Button>
           <AuthRedirect>
             Don`t have an account?

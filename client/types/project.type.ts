@@ -5,7 +5,7 @@ export interface User {
 }
 
 export type Priority = "low" | "medium" | "high";
-export type Status = "todo" | "progress" | "done";
+export type Status = "todo" | "progress" | "review" | "done";
 
 export interface Task {
   id: number;

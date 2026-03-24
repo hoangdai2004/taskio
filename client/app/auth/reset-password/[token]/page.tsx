@@ -34,7 +34,7 @@ export default function ResetPasswordPage() {
       alert("Password updated");
 
       router.push("/auth/login");
-    } catch (error) {
+    } catch {
       alert("Token invalid or expired");
     } finally {
       setLoading(false);
@@ -109,7 +109,7 @@ const Button = styled.button`
   background: ${({ theme }) => theme.colors.primary};
   color: white;
   border: none;
-  border-radius: 6px;
+  border-radius: 6px; 
   cursor: pointer;
 
   &:hover {

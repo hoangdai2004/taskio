@@ -10,6 +10,10 @@ export const columns: Column[] = [
     title: "In Progress",
   },
   {
+    id: "review",
+    title: "Review"
+  },
+  {
     id: "done",
     title: "Done",
   },

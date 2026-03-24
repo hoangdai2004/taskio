@@ -3,7 +3,7 @@
 import styled from "styled-components";
 import { useEffect, useState } from "react";
 import { Task, Status } from "@/types/project.type";
-import Column from "./Column"
+import Column from "./column"
 import { columns } from "@/constants/columns";
 
 interface Props {

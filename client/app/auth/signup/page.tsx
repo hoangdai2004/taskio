@@ -6,7 +6,7 @@ import { signUp } from "@/lib/services/auth.service";
 import Signup from "@/public/images/signup.svg";
 import Image from "next/image";
 import { AxiosError } from "axios";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, LoaderCircle } from "lucide-react";
 
 import {
   Wrapper,
@@ -20,6 +20,8 @@ import {
   ErrorMessage,
   Icon,
   Form,
+  InputWrapper,
+  Label,
 } from "@/styles/auth.style";
 
 export default function SignupPage() {
@@ -43,7 +45,7 @@ export default function SignupPage() {
 
     const fullName = `${firstName} ${lastName}`;
     const mail = email.trim();
-    const pass = password.trim();
+    const pass = password;
     const confirm = confirmPassword.trim();
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -93,84 +95,107 @@ export default function SignupPage() {
     <Wrapper>
       <Container>
         <ImageWrapper>
-          <Image src={Signup} alt="Signup Image" width={400} height={400} />
+          <Image
+            src={Signup}
+            alt="User registration illustration"
+            width={400}
+            height={400}
+          />
         </ImageWrapper>
 
         <Form onSubmit={handleSignup}>
           <Title>Sign Up</Title>
 
-          <Input
-            type="text"
-            placeholder="First Name"
-            value={firstName}
-            disabled={loading}
-            onChange={(e) => {
-              setFirstName(e.target.value);
-              setError("");
-            }}
-          />
-
-          <Input
-            type="text"
-            placeholder="Last Name"
-            value={lastName}
-            disabled={loading}
-            onChange={(e) => {
-              setLastName(e.target.value);
-              setError("");
-            }}
-          />
-
-          <Input
-            type="email"
-            placeholder="Email"
-            autoComplete="email"
-            value={email}
-            disabled={loading}
-            onChange={(e) => {
-              setEmail(e.target.value);
-              setError("");
-            }}
-          />
-
-          <PasswordWrapper>
+          <InputWrapper>
+            <Label htmlFor="firstName">First Name</Label>
             <Input
-              type={showPassword ? "text" : "password"}
-              placeholder="Password"
-              autoComplete="new-password"
-              value={password}
+              id="firstName"
+              type="text"
+              placeholder="Enter your first name"
+              value={firstName}
               disabled={loading}
               onChange={(e) => {
-                setPassword(e.target.value);
+                setFirstName(e.target.value);
                 setError("");
               }}
             />
+          </InputWrapper>
 
-            <Icon onClick={() => !loading && setShowPassword(!showPassword)}>
-              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-            </Icon>
+          <InputWrapper>
+            <Label htmlFor="lastName">Last Name</Label>
+            <Input
+              id="lastName"
+              type="text"
+              placeholder="Enter your last name"
+              value={lastName}
+              disabled={loading}
+              onChange={(e) => {
+                setLastName(e.target.value);
+                setError("");
+              }}
+            />
+          </InputWrapper>
+
+          <InputWrapper>
+            <Label htmlFor="email">Email</Label>
+            <Input
+              id="email"
+              type="email"
+              autoComplete="email"
+              placeholder="Enter your email"
+              value={email}
+              disabled={loading}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                setError("");
+              }}
+            />
+          </InputWrapper>
+
+          <PasswordWrapper>
+            <InputWrapper>
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                autoComplete="new-password"
+                placeholder="Enter your password"
+                value={password}
+                disabled={loading}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  setError("");
+                }}
+              />
+              <Icon type="button" onClick={() => !loading && setShowPassword(!showPassword)}>
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </Icon>
+            </InputWrapper>
           </PasswordWrapper>
 
           <PasswordWrapper>
-            <Input
-              type={showConfirmPassword ? "text" : "password"}
-              placeholder="Confirm Password"
-              autoComplete="new-password"
-              value={confirmPassword}
-              disabled={loading}
-              onChange={(e) => {
-                setConfirmPassword(e.target.value);
-                setError("");
-              }}
-            />
-
-            <Icon
-              onClick={() =>
-                !loading && setShowConfirmPassword(!showConfirmPassword)
-              }
-            >
-              {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-            </Icon>
+            <InputWrapper>
+              <Label htmlFor="confirmPassword">Confirm Password</Label>
+              <Input
+                id="confirmPassword"
+                type={showConfirmPassword ? "text" : "password"}
+                placeholder="Enter your confirm password"
+                autoComplete="new-password"
+                value={confirmPassword}
+                disabled={loading}
+                onChange={(e) => {
+                  setConfirmPassword(e.target.value);
+                  setError("");
+                }}
+              />
+              <Icon
+                onClick={() =>
+                  !loading && setShowConfirmPassword(!showConfirmPassword)
+                }
+              >
+                {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </Icon>
+            </InputWrapper>
           </PasswordWrapper>
 
           <Button
@@ -184,7 +209,7 @@ export default function SignupPage() {
               !confirmPassword
             }
           >
-            {loading ? "Signing up..." : "Sign Up"}
+            {loading ? <LoaderCircle size={18} /> : "Sign Up"}
           </Button>
 
           <AuthRedirect>

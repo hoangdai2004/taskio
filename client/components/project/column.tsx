@@ -56,6 +56,8 @@ const getStatusColor = (theme: DefaultTheme, status: Status) => {
       return theme.colors.primary;
     case "progress":
       return theme.colors.warning;
+    case "review":
+      return theme.colors.review;
     case "done":
       return theme.colors.success;
     default:

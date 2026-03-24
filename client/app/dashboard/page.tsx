@@ -1,5 +1,10 @@
-import React from "react";
+"use client";
+
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
+import { getDashboard } from "@/lib/services/dashboadr.service";
+import { useAuth } from "@/context/AuthContext";
+
 import {
   BarChart3,
   Clock,
@@ -7,24 +12,88 @@ import {
   AlertTriangle,
   User,
 } from "lucide-react";
+
 import DonutChart from "@/components/home/DonutChart";
 import StatCard from "@/components/home/StartCard";
 import { colors } from "@/styles/colors";
 
-const chartData = [
-  { label: "Completed", value: 12, color: "#22c55e" },
-  { label: "In Progress", value: 8, color: "#0ea5e9" },
-  { label: "Pending", value: 3, color: "#f59e0b" },
-  { label: "Overdue", value: 4, color: "#ef4444" },
-];
+type Stats = {
+  total: number;
+  todo: number;
+  inProgress: number;
+  completed: number;
+  overdue: number;
+};
+
+type ChartItem = {
+  label: string;
+  value: number;
+  color: string;
+};
+
+type Task = {
+  id: number;
+  title: string;
+  due_date: string;
+  project: string;
+};
+
+type Activity = {
+  user: string;
+  action: string;
+  target_type: string;
+  created_at: string;
+};
 
 export default function Dashboard() {
+  const [stats, setStats] = useState<Stats | null>(null);
+  const [chartData, setChartData] = useState<ChartItem[]>([]);
+  const [upcoming, setUpcoming] = useState<Task[]>([]);
+  const [activity, setActivity] = useState<Activity[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const { user } = useAuth();
+
+  useEffect(() => {
+    const fetchDashboard = async () => {
+      try {
+        const res = await getDashboard();
+
+        setStats(res.stats);
+        setChartData(res.chart);
+        setUpcoming(res.upcoming);
+        setActivity(res.activity);
+      } catch (error) {
+        console.error("Dashboard error", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboard();
+  }, []);
+
+  const hour = new Date().getHours();
+
+  const greeting =
+    hour < 12
+      ? "Good morning"
+      : hour < 18
+      ? "Good afternoon"
+      : "Good evening";
+
+  if (loading) {
+    return <Wrapper>Loading dashboard...</Wrapper>;
+  }
+
   return (
     <Wrapper>
       <Main>
         <Header>
           <div>
-            <Title>Good morning, Dai 👋</Title>
+            <Title>
+              {greeting}, {user?.name}
+            </Title>
             <Subtitle>Here’s what’s happening today.</Subtitle>
           </div>
 
@@ -37,25 +106,28 @@ export default function Dashboard() {
         <CardGrid>
           <StatCard
             title="Total Tasks"
-            value="24"
+            value={stats?.total || 0}
             icon={<BarChart3 size={18} />}
             color="#6366f1"
           />
+
           <StatCard
             title="In Progress"
-            value="8"
+            value={stats?.inProgress || 0}
             icon={<Clock size={18} />}
             color="#0ea5e9"
           />
+
           <StatCard
             title="Completed"
-            value="12"
+            value={stats?.completed || 0}
             icon={<CheckCircle2 size={18} />}
             color="#10b981"
           />
+
           <StatCard
             title="Overdue"
-            value="4"
+            value={stats?.overdue || 0}
             icon={<AlertTriangle size={18} />}
             color="#ef4444"
           />
@@ -77,88 +149,60 @@ export default function Dashboard() {
               <ViewAll>View all</ViewAll>
             </PanelHeader>
 
-            <TaskItem>
-              <User size={18} />
-              <div>
-                <strong>Design meeting</strong>
-                <small>Apr 26</small>
-              </div>
-              <Badge $danger>Today</Badge>
-            </TaskItem>
+            {upcoming.length === 0 ? (
+              <Empty>No upcoming deadlines</Empty>
+            ) : (
+              upcoming.map((task) => (
+                <TaskItem key={task.id}>
+                  <User size={18} />
 
-            <TaskItem>
-              <User size={18} />
-              <div>
-                <strong>Launch campaign</strong>
-                <small>Apr 27</small>
-              </div>
-              <Badge $danger>Overdue</Badge>
-            </TaskItem>
+                  <div>
+                    <strong>{task.title}</strong>
 
-            <TaskItem>
-              <User size={18} />
-              <div>
-                <strong>Sprint planning</strong>
-                <small>Apr 30</small>
-              </div>
-              <Badge>Upcoming</Badge>
-            </TaskItem>
+                    <small>
+                      {task.project} •{" "}
+                      {new Date(task.due_date).toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                      })}
+                    </small>
+                  </div>
+
+                  <Badge>Upcoming</Badge>
+                </TaskItem>
+              ))
+            )}
           </Panel>
         </SectionGrid>
 
-        <SectionGrid>
-          <Panel>
-            <PanelHeader>
-              <PanelTitle>Task Overview</PanelTitle>
-              <FilterButton>This Week</FilterButton>
-            </PanelHeader>
+        <Panel>
+          <PanelHeader>
+            <PanelTitle>Recent Activity</PanelTitle>
+            <ViewAll>View all</ViewAll>
+          </PanelHeader>
 
-            <DonutChart data={chartData} />
-          </Panel>
+          {activity.length === 0 ? (
+            <Empty>No activity yet</Empty>
+          ) : (
+            activity.map((item, i) => (
+              <ActivityItem key={i}>
+                <ActivityAvatar />
 
-          <Panel>
-            <PanelHeader>
-              <PanelTitle>Recent Activity</PanelTitle>
-              <ViewAll>View all</ViewAll>
-            </PanelHeader>
+                <ActivityContent>
+                  <strong>{item.user}</strong>
 
-            <ActivityItem>
-              <ActivityAvatar />
-              <ActivityContent>
-                <strong>Anima completed</strong>
-                <p>Mobile App Design</p>
-                <small>2h ago</small>
-              </ActivityContent>
-            </ActivityItem>
+                  <p>
+                    {item.action} {item.target_type}
+                  </p>
 
-            <ActivityItem>
-              <ActivityAvatar />
-              <ActivityContent>
-                <strong>An commented on</strong>
-                <p>User Research</p>
-                <small>5h ago</small>
-              </ActivityContent>
-            </ActivityItem>
-
-            <ActivityItem>
-              <ActivityAvatar />
-              <ActivityContent>
-                <strong>Dai created a new task</strong>
-                <p>Update homepage</p>
-                <small>Yesterday</small>
-              </ActivityContent>
-            </ActivityItem>
-
-            <ActivityItem>
-              <ActivityAvatar />
-              <ActivityContent>
-                <strong>Duy attached file to</strong>
-                <p>Website Redesign</p>
-                <small>Yesterday</small>
-              </ActivityContent>
-            </ActivityItem>
-          </Panel>
-        </SectionGrid>
+                  <small>
+                    {new Date(item.created_at).toLocaleString()}
+                  </small>
+                </ActivityContent>
+              </ActivityItem>
+            ))
+          )}
+        </Panel>
       </Main>
     </Wrapper>
   );
@@ -387,4 +431,10 @@ const ActivityContent = styled.div`
 
     color: ${colors.textMuted};
   }
+`;
+
+const Empty = styled.div`
+  text-align: center;
+  padding: 20px;
+  color: ${colors.primary};
 `;

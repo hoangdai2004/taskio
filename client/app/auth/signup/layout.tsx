@@ -1,6 +1,15 @@
+import { Metadata } from "next";
 import React from "react";
 
-export default function SignupLayout({
+export const metadata: Metadata = {
+  title: "SignUp",
+  robots: {
+    index: false,
+    follow: true,
+  },
+};
+
+export default function SignUpLayout({
   children,
 }: {
   children: React.ReactNode;

@@ -11,7 +11,7 @@ export default function TasksPage() {
           <Title>My Tasks</Title>
 
           <Tabs>
-            <Tab active>All</Tab>
+            <Tab>All</Tab>
             <Tab>Today</Tab>
             <Tab>Completed</Tab>
           </Tabs>
