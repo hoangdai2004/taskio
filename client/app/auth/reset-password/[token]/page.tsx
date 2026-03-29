@@ -1,123 +1,115 @@
 "use client";
 
-import { useParams, useRouter } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { useState } from "react";
-import styled from "styled-components";
-import { resetPassword } from "@/lib/services/auth.service";
+import Image from "next/image";
+import ResetPassword from "@/public/images/resetPassword.svg";
+import { Eye, EyeOff, LoaderCircle } from "lucide-react";
+
+import {
+  Wrapper,
+  Container,
+  ImageWrapper,
+  Form,
+  Title,
+  Input,
+  Button,
+  ErrorMessage,
+  Label,
+  InputWrapper,
+  Icon,
+} from "@/styles/auth.style";
 
 export default function ResetPasswordPage() {
-  const { token } = useParams();
   const router = useRouter();
+  const params = useSearchParams();
+  const token = params.get("token");
 
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [password, setPassword] = useState<string>("");
+  const [confirm, setConfirm] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string>("");
 
-  const handleReset = async () => {
-    if (!password) {
-      alert("Please enter password");
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [showConfirm, setShowConfirm] = useState<boolean>(false);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (!token) {
+      return setError("Invalid or expired token");
+    }
+
+    if (!password || !confirm) {
+      setError("Please fill in all fields.");
       return;
     }
 
     if (password.length < 6) {
-      alert("Password must be at least 6 characters");
+      setError("Password must be at least 6 characters long.");
       return;
     }
 
-    try {
-      setLoading(true);
-
-      await resetPassword({
-        token: token as string,
-        password,
-      });
-
-      alert("Password updated");
-
-      router.push("/auth/login");
-    } catch {
-      alert("Token invalid or expired");
-    } finally {
-      setLoading(false);
+    if (password !== confirm) {
+      setError("Passwords do not match.");
+      return;
     }
+
+    setLoading(true);
+    setError("");
   };
 
   return (
-    <Container>
-      <Card>
-        <Title>Reset Password</Title>
+    <Wrapper>
+      <Container>
+        <ImageWrapper>
+          <Image src={ResetPassword} alt="Reset" width={400} height={400} />
+        </ImageWrapper>
 
-        <Description>Enter your new password.</Description>
+        <Form onSubmit={handleSubmit}>
+          <Title>Reset Password</Title>
 
-        <Input
-          type="password"
-          placeholder="New password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
+          <InputWrapper>
+            <Label>New Password</Label>
+            <Input
+              type={showPassword ? "text" : "password"}
+              value={password}
+              disabled={loading}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <Icon
+              onClick={() => {
+                if (!loading) setShowPassword((prev) => !prev);
+              }}
+            >
+              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+            </Icon>
+          </InputWrapper>
 
-        <Button onClick={handleReset} disabled={loading}>
-          {loading ? "Resetting..." : "Reset Password"}
-        </Button>
-      </Card>
-    </Container>
+          <InputWrapper>
+            <Label>Confirm Password</Label>
+            <Input
+              type={showConfirm ? "text" : "password"}
+              value={confirm}
+              disabled={loading}
+              onChange={(e) => setConfirm(e.target.value)}
+            />
+            <Icon
+              onClick={() => {
+                if (!loading) setShowConfirm((prev) => !prev);
+              }}
+            >
+              {showConfirm ? <EyeOff size={18} /> : <Eye size={18} />}
+            </Icon>
+          </InputWrapper>
+
+          <Button disabled={loading || !password || !confirm}>
+            {loading ? <LoaderCircle size={18} /> : "Reset Password"}
+          </Button>
+
+          {error && <ErrorMessage>{error}</ErrorMessage>}
+        </Form>
+      </Container>
+    </Wrapper>
   );
 }
-
-const Container = styled.div`
-  height: 100vh;
-  background: ${({ theme }) => theme.colors.background};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-
-const Card = styled.div`
-  width: 400px;
-  background: ${({ theme }) => theme.colors.card};
-  padding: 32px;
-  border-radius: 10px;
-  border: 1px solid ${({ theme }) => theme.colors.border};
-`;
-
-const Title = styled.h1`
-  font-size: 24px;
-  color: ${({ theme }) => theme.colors.textPrimary};
-  margin-bottom: 8px;
-`;
-
-const Description = styled.p`
-  color: ${({ theme }) => theme.colors.textSecondary};
-  margin-bottom: 20px;
-`;
-
-const Input = styled.input`
-  width: 100%;
-  padding: 10px;
-  border-radius: 6px;
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  margin-bottom: 16px;
-
-  &:focus {
-    outline: none;
-    border-color: ${({ theme }) => theme.colors.primary};
-  }
-`;
-
-const Button = styled.button`
-  width: 100%;
-  padding: 10px;
-  background: ${({ theme }) => theme.colors.primary};
-  color: white;
-  border: none;
-  border-radius: 6px; 
-  cursor: pointer;
-
-  &:hover {
-    background: ${({ theme }) => theme.colors.primaryHover};
-  }
-
-  &:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
-`;

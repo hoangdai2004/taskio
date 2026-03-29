@@ -1,93 +1,89 @@
 "use client";
 
 import { useState } from "react";
-import styled from "styled-components";
-import { forgotPassword } from "@/lib/services/auth.service";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
+import ForgotPassword from "@/public/images/forgotPassword.svg";
+import { LoaderCircle } from "lucide-react";
+
+import {
+  Wrapper,
+  Container,
+  ImageWrapper,
+  Form,
+  Title,
+  Input,
+  Button,
+  ErrorMessage,
+  Label,
+  InputWrapper,
+  AuthRedirect,
+} from "@/styles/auth.style";
 
 export default function ForgotPasswordPage() {
+  const router = useRouter();
+
   const [email, setEmail] = useState("");
-  const router = useRouter()
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string>("")
 
-const handleSubmit = async () => {
-  const res = await forgotPassword({ email });
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
 
-  alert("Reset link created");
+    setLoading(true);
+    setError("")
 
-  router.push(res.resetLink);
-};
+    const mail = email.trim()
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailRegex.test(mail)) {
+      setError("Please enter a valid email address.");
+      return;
+    }
+
+    if (!mail) {
+      setError("Please fill in all fields.");
+      return;
+    }
+  };
 
   return (
-    <Container>
-      <Card>
-        <Title>Forgot password</Title>
+    <Wrapper>
+      <Container>
+        <ImageWrapper>
+          <Image src={ForgotPassword} alt="Forgot" width={400} height={400} />
+        </ImageWrapper>
 
-        <Description>
-          Enter your email and we will send you a reset link.
-        </Description>
+        <Form onSubmit={handleSubmit}>
+          <Title>Forgot Password</Title>
 
-        <Input
-          type="email"
-          placeholder="Enter your email"
-          onChange={(e) => setEmail(e.target.value)}
-        />
+          <InputWrapper>
+            <Label>Email</Label>
+            <Input
+              type="email"
+              placeholder="Enter your email"
+              autoComplete="email"
+              value={email}
+              disabled={loading}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </InputWrapper>
 
-        <Button onClick={handleSubmit}>Send Reset Link</Button>
-      </Card>
-    </Container>
+          <Button disabled={loading || !email}>
+            {loading ? <LoaderCircle size={18} /> : "Send Reset Link"}
+          </Button>
+
+          <AuthRedirect>
+            Back to
+            <button onClick={() => router.push("/auth/signin")}>
+              Sign In
+            </button>
+          </AuthRedirect>
+
+          {error && <ErrorMessage>{error}</ErrorMessage>}
+        </Form>
+      </Container>
+    </Wrapper>
   );
 }
-
-const Container = styled.div`
-  height: 100vh;
-  background: ${({ theme }) => theme.colors.background};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-
-const Card = styled.div`
-  width: 400px;
-  background: ${({ theme }) => theme.colors.card};
-  padding: 32px;
-  border-radius: 10px;
-  border: 1px solid ${({ theme }) => theme.colors.border};
-`;
-
-const Title = styled.h1`
-  font-size: 24px;
-  color: ${({ theme }) => theme.colors.textPrimary};
-  margin-bottom: 8px;
-`;
-
-const Description = styled.p`
-  color: ${({ theme }) => theme.colors.textSecondary};
-  margin-bottom: 20px;
-`;
-
-const Input = styled.input`
-  width: 100%;
-  padding: 10px;
-  border-radius: 6px;
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  margin-bottom: 16px;
-
-  &:focus {
-    outline: none;
-    border-color: ${({ theme }) => theme.colors.primary};
-  }
-`;
-
-const Button = styled.button`
-  width: 100%;
-  padding: 10px;
-  background: ${({ theme }) => theme.colors.primary};
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-
-  &:hover {
-    background: ${({ theme }) => theme.colors.primaryHover};
-  }
-`;
