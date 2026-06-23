@@ -2,7 +2,7 @@
 
 import styled from "styled-components";
 import { X, Trash2, MessageSquare, Send } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { colors } from "@/styles/colors";
 import { useAuth } from "@/context/AuthContext";
 import { 
@@ -114,20 +114,28 @@ export default function TaskDetailModal({
     }
   };
 
+  const isAddingCommentRef = useRef(false);
+
   const handleAddComment = async () => {
-    if (!commentText.trim() || !activeCompanyId || !task) return;
+    if (!commentText.trim() || !activeCompanyId || !task || isAddingCommentRef.current) return;
 
     try {
+      isAddingCommentRef.current = true;
       setIsAddingComment(true);
       const { id, content, user, createdAt } = await addComment(taskId, activeCompanyId, commentText);
-      setTask({
-        ...task,
-        comments: [...task.comments, { id, content, user, createdAt }]
+      setTask((prevTask) => {
+        if (!prevTask) return prevTask;
+        return {
+          ...prevTask,
+          commentsDetail: [{ id, content, user, createdAt }, ...(prevTask.commentsDetail || [])]
+        };
       });
       setCommentText("");
+      onTaskUpdated();
     } catch (err) {
       console.error("Failed to add comment:", err);
     } finally {
+      isAddingCommentRef.current = false;
       setIsAddingComment(false);
     }
   };
@@ -234,7 +242,7 @@ export default function TaskDetailModal({
               </SectionTitle>
               
               <CommentsList>
-                {task?.comments.map((comment) => (
+                {task?.commentsDetail?.map((comment) => (
                   <CommentItem key={comment.id}>
                     <CommentAvatar src={comment.user.avatarUrl || "/images/avatar-default.png"} />
                     <CommentBody>
@@ -246,7 +254,7 @@ export default function TaskDetailModal({
                     </CommentBody>
                   </CommentItem>
                 ))}
-                {task?.comments.length === 0 && (
+                {(!task?.commentsDetail || task.commentsDetail.length === 0) && (
                   <NoComments>No comments yet. Be the first to start the discussion!</NoComments>
                 )}
               </CommentsList>

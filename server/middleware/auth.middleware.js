@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
+import prisma from "../config/prisma.js";
 
-export const authMiddleware = (req, res, next) => {
+export const authMiddleware = async (req, res, next) => {
   if (req.method === "OPTIONS") {
     return next();
   }
@@ -40,6 +41,15 @@ export const authMiddleware = (req, res, next) => {
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    const userExists = await prisma.user.findUnique({
+      where: { id: decoded.userId },
+      select: { id: true }
+    });
+
+    if (!userExists) {
+      return res.status(401).json({ message: "User not found" });
+    }
 
     req.user = decoded;
 

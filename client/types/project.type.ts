@@ -1,13 +1,13 @@
 export interface User {
   id: number;
-  name: string;
-  avatar: string;
+  fullName: string;
+  avatarUrl: string;
 }
 
 export interface ProjectMember {
   id: number;
-  name: string;
-  avatar: string;
+  fullName: string;
+  avatarUrl: string;
   role: "OWNER" | "ADMIN" | "MEMBER";
 }
 

@@ -172,6 +172,8 @@ const Board = styled.div`
   padding: 20px;
   overflow-x: auto;
   flex: 1;
+  min-width: 0;
+  width: 100%;
 
   &::-webkit-scrollbar {
     height: 6px;

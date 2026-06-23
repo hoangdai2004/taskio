@@ -77,6 +77,7 @@ const RightSection = styled.div`
   flex: 1;
   display: flex;
   flex-direction: column;
+  min-width: 0;
 `;
 
 const Main = styled.main`
@@ -86,4 +87,5 @@ const Main = styled.main`
   color: ${({ theme }) => theme.colors.textPrimary};
 
   overflow-y: auto;
+  min-width: 0;
 `;

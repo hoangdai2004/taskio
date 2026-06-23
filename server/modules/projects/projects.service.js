@@ -108,6 +108,9 @@
                   avatarUrl: true,
                 },
               },
+              _count: {
+                select: { comments: true, attachments: true }
+              }
             },
             orderBy: { position: "asc" },
           },
@@ -150,6 +153,8 @@
           dueDate: task.dueDate,
           assignee: task.assignee,
           position: task.position,
+          comments: task._count?.comments || 0,
+          files: task._count?.attachments || 0,
         });
       });
 

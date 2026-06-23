@@ -7,7 +7,7 @@ import Image from "next/image";
 import SelectCompanyImage from "@/public/images/selectCompany.svg";
 import { LoaderCircle, Search } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
-import { setActiveCompany } from "@/lib/services/company.service";
+import { setActiveCompany } from "@/lib/services/companies.service";
 
 export default function SelectCompanyPage() {
   const router = useRouter();

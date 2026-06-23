@@ -264,6 +264,9 @@ const Modal = styled.div`
   border-radius: 12px;
   max-width: 500px;
   width: 90%;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
   color: ${({ theme }) => theme.colors.textPrimary};
 `;
@@ -274,6 +277,7 @@ const ModalHeader = styled.div`
   align-items: center;
   padding: 24px;
   border-bottom: 1px solid ${({ theme }) => theme.colors.borderLight};
+  flex-shrink: 0;
 `;
 
 const ModalTitle = styled.h3`
@@ -284,27 +288,37 @@ const ModalTitle = styled.h3`
 `;
 
 const CloseButton = styled.button`
-  background: none;
+  background: transparent;
   border: none;
   cursor: pointer;
-  color: #6b7280;
+  color: ${({ theme }) => theme.colors.textMuted};
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 4px;
+  border-radius: 6px;
 
   &:hover {
+    background: ${({ theme }) => theme.colors.borderLight};
     color: ${({ theme }) => theme.colors.textPrimary};
   }
 `;
 
 const ModalBody = styled.div`
   padding: 24px;
+  overflow-y: auto;
+  flex: 1;
 `;
 
 const FormRow = styled.div`
   display: flex;
   gap: 16px;
   margin-bottom: 20px;
+  
+  @media (max-width: 640px) {
+    flex-direction: column;
+    gap: 0;
+  }
 `;
 
 const FormGroup = styled.div`

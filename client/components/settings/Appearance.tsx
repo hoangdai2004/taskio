@@ -16,22 +16,22 @@ export default function SettingsAppearance() {
     if (nextTheme) {
       setTheme(nextTheme);
     }
-    
+
     // Check OS theme
     const checkOsTheme = () => {
       const isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
       setOsTheme(isDark ? "dark" : "light");
     };
-    
+
     checkOsTheme();
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
     mediaQuery.addEventListener("change", checkOsTheme);
     return () => mediaQuery.removeEventListener("change", checkOsTheme);
   }, [nextTheme]);
 
-  const handleThemeSelect = (newTheme: string) => {
+  const handleThemeSelect = (newTheme: "light" | "dark" | "system") => {
     setTheme(newTheme);
-    setNextTheme(newTheme as "light" | "dark" | "system");
+    setNextTheme(newTheme);
   };
 
   const handleSave = async () => {
@@ -168,7 +168,7 @@ const ThemeItem = styled.div<{ $active?: boolean }>`
 
   &:hover {
     border-color: ${({ $active, theme }) =>
-      $active ? theme.colors.primary : theme.colors.border};
+    $active ? theme.colors.primary : theme.colors.border};
   }
 
   span {

@@ -92,6 +92,12 @@ export const getTasks = async (userId, companyId, filters = {}) => {
             fullName: true,
           },
         },
+        _count: {
+          select: {
+            comments: true,
+            attachments: true,
+          }
+        }
       },
       orderBy: [{ dueDate: "asc" }, { createdAt: "desc" }],
       skip,
@@ -113,6 +119,8 @@ export const getTasks = async (userId, companyId, filters = {}) => {
       project: t.project.name,
       assignee: t.assignee,
       createdBy: t.createdBy.fullName,
+      comments: t._count?.comments || 0,
+      files: t._count?.attachments || 0,
       createdAt: t.createdAt,
       updatedAt: t.updatedAt,
     })),
@@ -186,7 +194,9 @@ export const getTaskDetail = async (userId, companyId, taskId) => {
     project: task.project,
     assignee: task.assignee,
     createdBy: task.createdBy,
-    comments: task.comments,
+    commentsDetail: task.comments,
+    comments: task.comments.length,
+    files: 0,
     createdAt: task.createdAt,
     updatedAt: task.updatedAt,
   };

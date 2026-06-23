@@ -16,12 +16,14 @@ export interface TaskItem {
     avatarUrl?: string;
   };
   createdBy: string;
+  comments: number;
+  files: number;
   createdAt: string;
   updatedAt: string;
 }
 
 export interface TaskDetail extends TaskItem {
-  comments: Comment[];
+  commentsDetail: Comment[];
 }
 
 export interface Comment {

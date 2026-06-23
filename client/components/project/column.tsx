@@ -34,7 +34,11 @@ export default function Column({
   };
 
   return (
-    <Wrapper onDragOver={(e) => e.preventDefault()} onDrop={handleDrop}>
+    <Wrapper 
+      onDragEnter={(e) => e.preventDefault()}
+      onDragOver={(e) => e.preventDefault()} 
+      onDrop={handleDrop}
+    >
       <Header $status={column.id}>
         <IDot $status={column.id} />
         {column.title}

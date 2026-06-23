@@ -441,24 +441,25 @@ const IconButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 100%;
-  height: 100%;
+  padding: 4px;
+  border-radius: 6px;
   position: relative;
 
   &:hover {
     color: ${({ theme }) => theme.colors.textPrimary};
+    background: ${({ theme }) => theme.colors.surface};
   }
 `;
 
 const UnreadBadge = styled.div`
   position: absolute;
-  top: 6px;
-  right: 6px;
+  top: 2px;
+  right: 2px;
   width: 8px;
   height: 8px;
   background-color: ${({ theme }) => theme.colors.danger || "#ef4444"};
   border-radius: 50%;
-  border: 2px solid ${({ theme }) => theme.colors.surface || "#1f2937"};
+  border: 1.5px solid ${({ theme }) => theme.colors.surface || "#1f2937"};
 `;
 
 const SearchBox = styled.div`
@@ -496,22 +497,32 @@ const UserWrapper = styled.div`
   position: relative;
 `;
 
+const UserName = styled.div`
+  font-size: 14px;
+  font-weight: 600;
+
+  @media (max-width: 640px) {
+    display: none;
+  }
+`;
+
 const UserBox = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
 
   cursor: pointer;
+
+  svg {
+    @media (max-width: 640px) {
+      display: none;
+    }
+  }
 `;
 
 const Avatar = styled.div`
   border-radius: 50%;
   overflow: hidden;
-`;
-
-const UserName = styled.div`
-  font-size: 14px;
-  font-weight: 600;
 `;
 
 const SearchDropdown = styled.div`

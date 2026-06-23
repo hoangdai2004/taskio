@@ -31,20 +31,17 @@ export default function TaskCard({ task, onDragStart, onClick }: Props) {
       <Bottom>
         <Users>
           {task.assignees.map((u) => (
-            <Avatar key={u.id} src={u.avatar} alt={u.name} />
+            <Avatar key={u.id} src={u.avatarUrl} alt={u.fullName} />
           ))}
         </Users>
 
         <Info>
-          <Item>
-            <IconMessage />
-            {task.comments}
-          </Item>
-
-          <Item>
-            <IconFile />
-            {task.files}
-          </Item>
+          {task.comments > 0 && (
+            <Item>
+              <IconMessage />
+              {task.comments}
+            </Item>
+          )}
         </Info>
       </Bottom>
     </Card>

@@ -1,12 +1,13 @@
 "use client";
 
 import styled from "styled-components";
-import { X } from "lucide-react";
 import { useState, useEffect } from "react";
-import { colors } from "@/styles/colors";
 import { useAuth } from "@/context/AuthContext";
 import { updateProject } from "@/lib/services/projects.service";
 import { Project } from "@/types/project.type";
+import Button from "@/components/ui/Button";
+import { Input, TextArea } from "@/components/ui/Input";
+import { Modal } from "@/components/ui/Modal";
 
 interface EditProjectModalProps {
   isOpen: boolean;
@@ -63,108 +64,47 @@ export default function EditProjectModal({
     }
   };
 
-  if (!isOpen) return null;
+  const footer = (
+    <>
+      <Button variant="secondary" onClick={onClose} disabled={isSubmitting}>
+        Cancel
+      </Button>
+      <Button
+        variant="primary"
+        onClick={handleSubmit}
+        isLoading={isSubmitting}
+        disabled={!projectName.trim()}
+      >
+        Save Changes
+      </Button>
+    </>
+  );
 
   return (
-    <ModalOverlay onClick={onClose}>
-      <Modal onClick={(e) => e.stopPropagation()}>
-        <ModalHeader>
-          <ModalTitle>Edit Project</ModalTitle>
-          <CloseButton onClick={onClose}>
-            <X size={20} />
-          </CloseButton>
-        </ModalHeader>
+    <Modal isOpen={isOpen} onClose={onClose} title="Edit Project" footer={footer}>
+      <FormGroup>
+        <Input
+          label="Project Name *"
+          placeholder="Enter project name"
+          value={projectName}
+          onChange={(e) => setProjectName(e.target.value)}
+        />
+      </FormGroup>
 
-        <ModalBody>
-          <FormGroup>
-            <Label>Project Name *</Label>
-            <Input
-              placeholder="Enter project name"
-              value={projectName}
-              onChange={(e) => setProjectName(e.target.value)}
-            />
-          </FormGroup>
+      <FormGroup>
+        <TextArea
+          label="Description"
+          placeholder="Enter project description (optional)"
+          value={projectDesc}
+          onChange={(e) => setProjectDesc(e.target.value)}
+          rows={4}
+        />
+      </FormGroup>
 
-          <FormGroup>
-            <Label>Description</Label>
-            <TextArea
-              placeholder="Enter project description (optional)"
-              value={projectDesc}
-              onChange={(e) => setProjectDesc(e.target.value)}
-              rows={4}
-            />
-          </FormGroup>
-
-          {formError && <ErrorText>{formError}</ErrorText>}
-        </ModalBody>
-
-        <ModalFooter>
-          <CancelButton onClick={onClose}>Cancel</CancelButton>
-          <SubmitButton
-            onClick={handleSubmit}
-            disabled={!projectName.trim() || isSubmitting}
-          >
-            {isSubmitting ? "Saving..." : "Save Changes"}
-          </SubmitButton>
-        </ModalFooter>
-      </Modal>
-    </ModalOverlay>
+      {formError && <ErrorText>{formError}</ErrorText>}
+    </Modal>
   );
 }
-
-const ModalOverlay = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-`;
-
-const Modal = styled.div`
-  background: white;
-  border-radius: 12px;
-  max-width: 500px;
-  width: 90%;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-`;
-
-const ModalHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 24px;
-  border-bottom: 1px solid #e5e7eb;
-`;
-
-const ModalTitle = styled.h3`
-  font-size: 20px;
-  font-weight: 600;
-  margin: 0;
-  color: #1f2937;
-`;
-
-const CloseButton = styled.button`
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: #6b7280;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  &:hover {
-    color: #1f2937;
-  }
-`;
-
-const ModalBody = styled.div`
-  padding: 24px;
-`;
 
 const FormGroup = styled.div`
   margin-bottom: 20px;
@@ -174,90 +114,8 @@ const FormGroup = styled.div`
   }
 `;
 
-const Label = styled.label`
-  display: block;
-  font-size: 14px;
-  font-weight: 500;
-  color: #1f2937;
-  margin-bottom: 8px;
-`;
-
 const ErrorText = styled.div`
-  color: #dc2626;
+  color: ${({ theme }) => theme.colors.danger};
   font-size: 13px;
   margin-top: 16px;
-`;
-
-const Input = styled.input`
-  width: 100%;
-  padding: 10px 12px;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  font-size: 14px;
-  font-family: inherit;
-
-  &:focus {
-    outline: none;
-    border-color: ${colors.primary};
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-  }
-`;
-
-const TextArea = styled.textarea`
-  width: 100%;
-  padding: 10px 12px;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  font-size: 14px;
-  font-family: inherit;
-  resize: vertical;
-
-  &:focus {
-    outline: none;
-    border-color: ${colors.primary};
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-  }
-`;
-
-const ModalFooter = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-  padding: 24px;
-  border-top: 1px solid #e5e7eb;
-`;
-
-const CancelButton = styled.button`
-  padding: 10px 18px;
-  border: 1px solid #d1d5db;
-  background: white;
-  color: #1f2937;
-  border-radius: 8px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: 0.2s;
-
-  &:hover {
-    background: #f3f4f6;
-  }
-`;
-
-const SubmitButton = styled.button`
-  padding: 10px 18px;
-  background: ${colors.primary};
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: 0.2s;
-
-  &:hover:not(:disabled) {
-    background: ${colors.primaryHover};
-  }
-
-  &:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
 `;

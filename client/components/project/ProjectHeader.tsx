@@ -19,6 +19,9 @@ import { useAuth } from "@/context/AuthContext";
 import { deleteProject, refreshProjectInviteCode } from "@/lib/services/projects.service";
 import EditProjectModal from "@/components/modals/EditProjectModal";
 import AddProjectMemberModal from "@/components/modals/AddProjectMemberModal";
+import Button from "@/components/ui/Button";
+import { Avatar } from "@/components/ui/Avatar";
+import { Modal } from "@/components/ui/Modal";
 
 interface Props {
   project: Project;
@@ -93,30 +96,24 @@ export default function ProjectHeader({
         <Left>
           <Title>{project.name}</Title>
 
-          <IconBtn onClick={() => setShowEditModal(true)} title="Edit Project">
+          <Button variant="icon" onClick={() => setShowEditModal(true)} title="Edit Project">
             <Pencil size={16} />
-          </IconBtn>
+          </Button>
         </Left>
 
         <Right>
-          <AddMemberButton onClick={() => setShowAddMember(true)}>
-            <Plus size={14} />
-            Add Member
-          </AddMemberButton>
+          <Button variant="primary" icon={<Plus size={14} />} onClick={() => setShowAddMember(true)} hideTextOnMobile>Add Member</Button>
 
           <InviteContainer>
-            <InviteButton onClick={() => setShowInvite(!showInvite)}>
-              <Plus size={14} />
-              Invite Code
-            </InviteButton>
+            <Button variant="outline" icon={<Plus size={14} />} onClick={() => setShowInvite(!showInvite)} hideTextOnMobile>Invite Code</Button>
 
             {showInvite && project.inviteCode && (
               <InvitePopup>
                 <PopupHeader>
                   <span>Project Invite</span>
-                  <RefreshBtn onClick={handleRefreshInvite} disabled={isRefreshing}>
+                  <Button variant="ghost" size="icon" onClick={handleRefreshInvite} disabled={isRefreshing}>
                     <RefreshCw size={12} className={isRefreshing ? 'spin' : ''} />
-                  </RefreshBtn>
+                  </Button>
                 </PopupHeader>
                 <InviteCode style={{ opacity: isExpired ? 0.5 : 1 }}>
                   {isExpired ? 'EXPIRED' : project.inviteCode}
@@ -126,17 +123,14 @@ export default function ProjectHeader({
                     {isExpired ? 'Code expired' : `Expires: ${new Date(project.inviteCodeExpiresAt).toLocaleDateString()}`}
                   </ExpireInfo>
                 )}
-                <CopyButton disabled={isExpired} onClick={handleCopyInvite}>
-                  {copied ? <Check size={14} /> : <Copy size={14} />}
-                  {copied ? "Copied!" : "Copy Code"}
-                </CopyButton>
+                <Button variant="primary" size="sm" icon={copied ? <Check size={14} /> : <Copy size={14} />} disabled={isExpired} onClick={handleCopyInvite}>{copied ? "Copied!" : "Copy Code"}</Button>
               </InvitePopup>
             )}
           </InviteContainer>
 
           <Members>
             {project.members.slice(0, 4).map((m) => (
-              <Avatar key={m.id} src={m.avatar} title={`${m.name} • ${m.role.toLowerCase()}`} />
+              <Avatar key={m.id} src={m.avatarUrl} title={`${m.fullName} • ${m.role.toLowerCase()}`} size="md" />
             ))}
             {project.members.length > 4 && (
               <MoreCount>+{project.members.length - 4}</MoreCount>
@@ -148,9 +142,9 @@ export default function ProjectHeader({
       <Team id="project-team">
         {project.members.map((member) => (
           <MemberCard key={member.id}>
-            <AvatarSmall src={member.avatar} alt={member.name} />
+            <Avatar src={member.avatarUrl} alt={member.fullName} size="md" />
             <MemberInfo>
-              <MemberName>{member.name}</MemberName>
+              <MemberName>{member.fullName}</MemberName>
               <RoleTag>{member.role.toLowerCase()}</RoleTag>
             </MemberInfo>
           </MemberCard>
@@ -188,9 +182,9 @@ export default function ProjectHeader({
 
         <Right>
           <RelativeContainer>
-            <IconBtn onClick={() => setShowOptionsMenu(!showOptionsMenu)} title="More options">
+            <Button variant="icon" onClick={() => setShowOptionsMenu(!showOptionsMenu)} title="More options">
               <MoreHorizontal size={16} />
-            </IconBtn>
+            </Button>
 
             {showOptionsMenu && (
               <OptionsMenu>
@@ -200,23 +194,22 @@ export default function ProjectHeader({
               </OptionsMenu>
             )}
 
-            {showDeleteConfirm && (
-              <ModalOverlay onClick={() => setShowDeleteConfirm(false)}>
-                <DeletePopup onClick={(e) => e.stopPropagation()}>
-                  <DeleteWarningTitle>Delete Project</DeleteWarningTitle>
-                  <DeleteWarning>
-                    Are you sure you want to delete <strong>{project.name}</strong>? 
-                    This will permanently remove all tasks and data associated with this project.
-                  </DeleteWarning>
-                  <DeleteActions>
-                    <CancelBtn onClick={() => setShowDeleteConfirm(false)}>Cancel</CancelBtn>
-                    <ConfirmDeleteBtn onClick={handleDeleteProject} disabled={isDeleting}>
-                      {isDeleting ? "Deleting..." : "Delete Project"}
-                    </ConfirmDeleteBtn>
-                  </DeleteActions>
-                </DeletePopup>
-              </ModalOverlay>
-            )}
+            <Modal
+              isOpen={showDeleteConfirm}
+              onClose={() => setShowDeleteConfirm(false)}
+              title="Delete Project"
+              footer={
+                <>
+                  <Button variant="secondary" onClick={() => setShowDeleteConfirm(false)}>Cancel</Button>
+                  <Button variant="danger" isLoading={isDeleting} onClick={handleDeleteProject}>Delete Project</Button>
+                </>
+              }
+            >
+              <DeleteWarning>
+                Are you sure you want to delete <strong>{project.name}</strong>? 
+                This will permanently remove all tasks and data associated with this project.
+              </DeleteWarning>
+            </Modal>
           </RelativeContainer>
         </Right>
       </Bottom>
@@ -316,67 +309,12 @@ const Title = styled.h1`
   }
 `;
 
-const IconBtn = styled.div`
-  width: 28px;
-  height: 28px;
-
-  background: ${({ theme }) => theme.colors.borderLight};
-
-  color: ${({ theme }) => theme.colors.primary};
-
-  border-radius: 6px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  cursor: pointer;
-`;
-
 const InviteContainer = styled.div`
   position: relative;
 `;
 
 const RelativeContainer = styled.div`
   position: relative;
-`;
-
-const AddMemberButton = styled.button`
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background: ${({ theme }) => theme.colors.primary};
-  border: none;
-  border-radius: 8px;
-  font-weight: 500;
-  color: white;
-  cursor: pointer;
-  font-size: 13px;
-  padding: 8px 14px;
-  transition: 0.2s;
-
-  &:hover {
-    background: ${({ theme }) => theme.colors.primaryHover};
-  }
-`;
-
-const InviteButton = styled.button`
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background: transparent;
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: 8px;
-  font-weight: 500;
-  color: ${({ theme }) => theme.colors.textPrimary};
-  cursor: pointer;
-  font-size: 13px;
-  padding: 8px 14px;
-  transition: 0.2s;
-
-  &:hover {
-    background: ${({ theme }) => theme.colors.borderLight};
-  }
 `;
 
 const InvitePopup = styled.div`
@@ -410,29 +348,6 @@ const PopupHeader = styled.div`
   }
 `;
 
-const RefreshBtn = styled.button`
-  background: none;
-  border: none;
-  padding: 4px;
-  cursor: pointer;
-  color: ${({ theme }) => theme.colors.textMuted};
-  border-radius: 4px;
-
-  &:hover:not(:disabled) {
-    background: ${({ theme }) => theme.colors.borderLight};
-    color: ${({ theme }) => theme.colors.primary};
-  }
-
-  .spin {
-    animation: spin 1s linear infinite;
-  }
-
-  @keyframes spin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-  }
-`;
-
 const InviteCode = styled.div`
   font-family: monospace;
   background: ${({ theme }) => theme.colors.borderLight};
@@ -450,31 +365,6 @@ const ExpireInfo = styled.div<{ $expired?: boolean }>`
   color: ${({ $expired, theme }) => $expired ? "#dc2626" : theme.colors.textMuted};
   text-align: center;
   margin-top: -4px;
-`;
-
-const CopyButton = styled.button`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  background: ${({ theme }) => theme.colors.primary};
-  color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 8px 12px;
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s ease;
-
-  &:hover:not(:disabled) {
-    background: ${({ theme }) => theme.colors.primaryHover};
-  }
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
 `;
 
 const Members = styled.div`
@@ -495,17 +385,6 @@ const MoreCount = styled.div`
   border: 2px solid ${({ theme }) => theme.colors.card};
 `;
 
-const Avatar = styled.img`
-  width: 30px;
-  height: 30px;
-
-  border-radius: 50%;
-
-  border: 2px solid ${({ theme }) => theme.colors.card};
-
-  margin-left: -6px;
-`;
-
 const Team = styled.div`
   display: flex;
   flex-wrap: wrap;
@@ -521,14 +400,6 @@ const MemberCard = styled.div`
   border: 1px solid ${({ theme }) => theme.colors.border};
   border-radius: 12px;
   padding: 10px 12px;
-`;
-
-const AvatarSmall = styled.img`
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  object-fit: cover;
-  background: ${({ theme }) => theme.colors.border};
 `;
 
 const MemberInfo = styled.div`
@@ -548,46 +419,7 @@ const RoleTag = styled.span`
   text-transform: capitalize;
 `;
 
-const Button = styled.button`
-  display: flex;
-  align-items: center;
-  gap: 6px;
 
-  background: ${({ theme }) => theme.colors.card};
-
-  border: 1px solid ${({ theme }) => theme.colors.border};
-
-  border-radius: 8px;
-
-  padding: 6px 12px;
-
-  font-size: 13px;
-
-  color: ${({ theme }) => theme.colors.textSecondary};
-
-  cursor: pointer;
-`;
-
-const DeletePopup = styled.div`
-  background: ${({ theme }) => theme.colors.card};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: 12px;
-  padding: 24px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  width: 400px;
-  max-width: 90vw;
-  z-index: 1001;
-`;
-
-const DeleteWarningTitle = styled.h3`
-  margin: 0;
-  font-size: 18px;
-  font-weight: 600;
-  color: ${({ theme }) => theme.colors.textPrimary};
-`;
 
 const OptionsMenu = styled.div`
   position: absolute;
@@ -620,64 +452,12 @@ const OptionItem = styled.div<{ $danger?: boolean }>`
   }
 `;
 
-const ModalOverlay = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.4);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-`;
-
 const DeleteWarning = styled.div`
   font-size: 13px;
   color: ${({ theme }) => theme.colors.textSecondary};
   line-height: 1.4;
 `;
 
-const DeleteActions = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  gap: 8px;
-`;
-
-const CancelBtn = styled.button`
-  padding: 6px 10px;
-  background: transparent;
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: 6px;
-  font-size: 12px;
-  cursor: pointer;
-  color: ${({ theme }) => theme.colors.textPrimary};
-
-  &:hover {
-    background: ${({ theme }) => theme.colors.borderLight};
-  }
-`;
-
-const ConfirmDeleteBtn = styled.button`
-  padding: 6px 10px;
-  background: #dc2626;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-size: 12px;
-  font-weight: 500;
-  cursor: pointer;
-
-  &:hover:not(:disabled) {
-    background: #b91c1c;
-  }
-
-  &:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
-`;
 const FilterWrapper = styled.div`
   display: flex;
   align-items: center;

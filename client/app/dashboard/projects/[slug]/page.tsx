@@ -74,14 +74,14 @@ export default function ProjectPage() {
                 desc: task.description || "",
                 status: mapStatus(status),
                 priority: mapPriority(task.priority),
-                comments: 0,
-                files: 0,
+                comments: task.comments || 0,
+                files: task.files || 0,
                 assignees: task.assignee
                   ? [
                     {
                       id: task.assignee.id,
-                      name: task.assignee.fullName,
-                      avatar: task.assignee.avatarUrl || "/images/avatar-default.png",
+                      fullName: task.assignee.fullName,
+                      avatarUrl: task.assignee.avatarUrl || "/images/avatar-default.png",
                     },
                   ]
                   : [],
@@ -97,8 +97,8 @@ export default function ProjectPage() {
             inviteCode: detailedProject.inviteCode,
             members: detailedProject.members.map((member) => ({
               id: member.id,
-              name: member.fullName,
-              avatar: member.avatarUrl || "/images/avatar-default.png",
+              fullName: member.fullName,
+              avatarUrl: member.avatarUrl || "/images/avatar-default.png",
               role: member.role,
             })),
             tasks: mappedTasks,
