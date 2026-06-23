@@ -6,7 +6,7 @@ import { signUp } from "@/lib/services/auth.service";
 import Signup from "@/public/images/signup.svg";
 import Image from "next/image";
 import { AxiosError } from "axios";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, LoaderCircle } from "lucide-react";
 
 import {
   Wrapper,
@@ -20,10 +20,17 @@ import {
   ErrorMessage,
   Icon,
   Form,
+  InputWrapper,
+  Label,
+  GoogleButton,
+  Divider,
 } from "@/styles/auth.style";
+import { googleSignIn } from "@/lib/services/auth.service";
+import { useAuth } from "@/context/AuthContext";
 
 export default function SignupPage() {
   const router = useRouter();
+  const { setUser: setAuthUser, setActiveCompanyId, setCompanies } = useAuth();
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -41,14 +48,17 @@ export default function SignupPage() {
   const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const fullName = `${firstName} ${lastName}`;
-    const mail = email.trim();
-    const pass = password.trim();
-    const confirm = confirmPassword.trim();
+    if (loading) return;
+
+    const first = firstName.trim();
+    const last = lastName.trim();
+    const mail = email.trim().toLowerCase();
+
+    const fullName = `${first} ${last}`;
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    if (!firstName || !lastName || !mail || !pass || !confirm) {
+    if (!first || !last || !mail || !password || !confirmPassword) {
       setError("Please fill in all fields.");
       return;
     }
@@ -58,12 +68,12 @@ export default function SignupPage() {
       return;
     }
 
-    if (pass.length < 6) {
+    if (password.length < 6) {
       setError("Password must be at least 6 characters long.");
       return;
     }
 
-    if (pass !== confirm) {
+    if (password !== confirmPassword) {
       setError("Passwords do not match.");
       return;
     }
@@ -72,18 +82,56 @@ export default function SignupPage() {
     setError("");
 
     try {
-      const response = await signUp({
-        name: fullName,
+      await signUp({
+        fullName: fullName,
         email: mail,
-        password: pass,
+        password: password,
       });
 
-      alert(response.message);
-
-      router.replace("/signin");
+      router.push("/auth/signin");
     } catch (error) {
       const err = error as AxiosError<{ message: string }>;
-      setError(err.response?.data?.message || "Signup failed.");
+      if (err.response?.status === 409) {
+        setError("Email already exists.");
+      } else {
+        setError(err.response?.data?.message || "Signup failed.");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleSignin = async () => {
+    if (loading) return;
+    setLoading(true);
+    setError("");
+
+    try {
+      const response = await googleSignIn({
+        email: "demo@google.com",
+        fullName: "Demo User",
+        avatarUrl: ""
+      });
+
+      const user = response.user;
+      const companies = user?.companies ?? [];
+
+      localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("companies", JSON.stringify(companies));
+
+      setAuthUser(user);
+      setCompanies(companies);
+
+      if (companies.length > 0) {
+        const defaultCompanyId = companies[0].id;
+        localStorage.setItem("activeCompanyId", String(defaultCompanyId));
+        setActiveCompanyId(defaultCompanyId);
+        router.replace("/dashboard");
+      } else {
+        router.replace("/onboarding/create-company");
+      }
+    } catch (error: any) {
+      setError(error.response?.data?.message || "Google Sign in failed.");
     } finally {
       setLoading(false);
     }
@@ -93,99 +141,144 @@ export default function SignupPage() {
     <Wrapper>
       <Container>
         <ImageWrapper>
-          <Image src={Signup} alt="Signup Image" width={400} height={400} />
+          <Image
+            src={Signup}
+            alt="User registration illustration"
+            width={400}
+            height={400}
+          />
         </ImageWrapper>
 
         <Form onSubmit={handleSignup}>
           <Title>Sign Up</Title>
 
-          <Input
-            type="text"
-            placeholder="First Name"
-            value={firstName}
-            disabled={loading}
-            onChange={(e) => {
-              setFirstName(e.target.value);
-              setError("");
-            }}
-          />
-
-          <Input
-            type="text"
-            placeholder="Last Name"
-            value={lastName}
-            disabled={loading}
-            onChange={(e) => {
-              setLastName(e.target.value);
-              setError("");
-            }}
-          />
-
-          <Input
-            type="email"
-            placeholder="Email"
-            autoComplete="email"
-            value={email}
-            disabled={loading}
-            onChange={(e) => {
-              setEmail(e.target.value);
-              setError("");
-            }}
-          />
-
-          <PasswordWrapper>
+          <InputWrapper>
+            <Label htmlFor="firstName">First Name</Label>
             <Input
-              type={showPassword ? "text" : "password"}
-              placeholder="Password"
-              autoComplete="new-password"
-              value={password}
+              id="firstName"
+              type="text"
+              placeholder="Enter your first name"
+              value={firstName}
               disabled={loading}
               onChange={(e) => {
-                setPassword(e.target.value);
+                setFirstName(e.target.value);
                 setError("");
               }}
             />
+          </InputWrapper>
 
-            <Icon onClick={() => !loading && setShowPassword(!showPassword)}>
-              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-            </Icon>
-          </PasswordWrapper>
-
-          <PasswordWrapper>
+          <InputWrapper>
+            <Label htmlFor="lastName">Last Name</Label>
             <Input
-              type={showConfirmPassword ? "text" : "password"}
-              placeholder="Confirm Password"
-              autoComplete="new-password"
-              value={confirmPassword}
+              id="lastName"
+              type="text"
+              placeholder="Enter your last name"
+              value={lastName}
               disabled={loading}
               onChange={(e) => {
-                setConfirmPassword(e.target.value);
+                setLastName(e.target.value);
                 setError("");
               }}
             />
+          </InputWrapper>
 
-            <Icon
-              onClick={() =>
-                !loading && setShowConfirmPassword(!showConfirmPassword)
-              }
-            >
-              {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-            </Icon>
+          <InputWrapper>
+            <Label htmlFor="email">Email</Label>
+            <Input
+              id="email"
+              type="email"
+              autoComplete="email"
+              placeholder="Enter your email"
+              value={email}
+              disabled={loading}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                setError("");
+              }}
+            />
+          </InputWrapper>
+
+          <PasswordWrapper>
+            <InputWrapper>
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                autoComplete="new-password"
+                placeholder="Enter your password"
+                value={password}
+                disabled={loading}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  setError("");
+                }}
+              />
+              <Icon
+                type="button"
+                onClick={() => !loading && setShowPassword(!showPassword)}
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </Icon>
+            </InputWrapper>
           </PasswordWrapper>
+
+          <PasswordWrapper>
+            <InputWrapper>
+              <Label htmlFor="confirmPassword">Confirm Password</Label>
+              <Input
+                id="confirmPassword"
+                type={showConfirmPassword ? "text" : "password"}
+                autoComplete="new-password"
+                placeholder="Confirm your password"
+                value={confirmPassword}
+                disabled={loading}
+                onChange={(e) => {
+                  setConfirmPassword(e.target.value);
+                  setError("");
+                }}
+              />
+              <Icon
+                type="button"
+                onClick={() =>
+                  !loading && setShowConfirmPassword(!showConfirmPassword)
+                }
+              >
+                {showConfirmPassword ? (
+                  <EyeOff size={18} />
+                ) : (
+                  <Eye size={18} />
+                )}
+              </Icon>
+            </InputWrapper>
+          </PasswordWrapper>
+
+          {error && <ErrorMessage>{error}</ErrorMessage>}
 
           <Button
             type="submit"
             disabled={
               loading ||
-              !firstName ||
-              !lastName ||
-              !email ||
-              !password ||
-              !confirmPassword
+              !firstName.trim() ||
+              !lastName.trim() ||
+              !email.trim() ||
+              !password.trim() ||
+              !confirmPassword.trim()
             }
           >
-            {loading ? "Signing up..." : "Sign Up"}
+            {loading ? <LoaderCircle className="spin" size={18} /> : "Sign Up"}
           </Button>
+
+          <Divider>or</Divider>
+
+          <GoogleButton type="button" onClick={handleGoogleSignin} disabled={loading}>
+            <Image
+              src="https://www.svgrepo.com/show/475656/google-color.svg"
+              alt="Google"
+              width={20}
+              height={20}
+            />
+            Continue with Google
+          </GoogleButton>
 
           <AuthRedirect>
             Already have an account?
@@ -193,8 +286,6 @@ export default function SignupPage() {
               Sign In
             </button>
           </AuthRedirect>
-
-          {error && <ErrorMessage>{error}</ErrorMessage>}
         </Form>
       </Container>
     </Wrapper>

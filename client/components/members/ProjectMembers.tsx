@@ -32,7 +32,7 @@ export default function ProjectMembers({
       <MemberList>
         {project.members.map((member) => (
           <MemberCard key={member.id}>
-            <img src={member.avatar} />
+            <img src={member.avatar} alt={member.name} />
             <span>{member.name}</span>
           </MemberCard>
         ))}

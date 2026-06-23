@@ -10,6 +10,7 @@ declare module "styled-components" {
       textPrimary: string;
       textSecondary: string;
       textMuted: string;
+      surface: string;
 
       background: string;
       card: string;
@@ -21,6 +22,35 @@ declare module "styled-components" {
       warning: string;
       danger: string;
       info: string;
+      review: string;
     };
+
+    colors2: {
+      textPrimary: string;
+      textSecondary: string;
+
+      primary: string;
+      primaryHover: string;
+
+      border: string;
+      borderLight: string;
+
+      background: string;
+      surface: string;
+
+      todo: string;
+      inProgress: string;
+      review: string;
+      done: string;
+
+      success: string;
+      danger: string;
+    };
+    radius: {
+      default: string;
+    }
+    gradients: {
+      main: (angle?: number) => string;
+    }
   }
 }

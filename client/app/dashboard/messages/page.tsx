@@ -1,36 +1,19 @@
 "use client";
 
 import styled from "styled-components";
-import ChatInput from "@/components/messages/ChatInput";
-import ChatHeader from "@/components/messages/ChatHeader";
-import ChatMessages from "@/components/messages/ChatMessages";
-import ChatSidebar from "@/components/messages/ChatSidebar";
+import FloatingChat from "@/components/messages/FloatingChat";
 
 export default function MessagesPage() {
   return (
-    <Container>
-      <ChatSidebar />
-
-      <ChatArea>
-        <ChatHeader />
-        <ChatMessages />
-        <ChatInput />
-      </ChatArea>
-    </Container>
+    <PageContainer>
+      <FloatingChat isFullScreen={true} />
+    </PageContainer>
   );
 }
 
-const Container = styled.div`
-  display: grid;
-  grid-template-columns: 260px 1fr;
+const PageContainer = styled.div`
+  width: 100%;
   height: 100%;
-
-  background: ${({ theme }) => theme.colors.borderLight};
-`;
-
-const ChatArea = styled.div`
   display: flex;
-  flex-direction: column;
-
-  background: ${({ theme }) => theme.colors.card};
+  background: ${({ theme }) => theme.colors.background};
 `;

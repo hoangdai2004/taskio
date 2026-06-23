@@ -1,93 +1,163 @@
 "use client";
 
 import { useState } from "react";
-import styled from "styled-components";
-import { forgotPassword } from "@/lib/services/auth.service";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
+import ForgotPassword from "@/public/images/forgotPassword.svg";
+import { LoaderCircle } from "lucide-react";
+import { forgotPassword } from "@/lib/services/auth.service";
+
+import {
+  Wrapper,
+  Container,
+  ImageWrapper,
+  Form,
+  Title,
+  Input,
+  Button,
+  ErrorMessage,
+  Label,
+  InputWrapper,
+  AuthRedirect,
+} from "@/styles/auth.style";
 
 export default function ForgotPasswordPage() {
+  const router = useRouter();
+
   const [email, setEmail] = useState("");
-  const router = useRouter()
+  const [loading, setLoading] = useState(false);
 
-const handleSubmit = async () => {
-  const res = await forgotPassword({ email });
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
-  alert("Reset link created");
+  const [otpCode, setOtpCode] = useState("");
 
-  router.push(res.resetLink);
-};
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (loading) return;
+
+    const mail = email.trim().toLowerCase();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!mail) {
+      setError("Please enter your email.");
+      return;
+    }
+
+    if (!emailRegex.test(mail)) {
+      setError("Please enter a valid email address.");
+      return;
+    }
+
+    setLoading(true);
+    setError("");
+    setSuccess("");
+    setOtpCode("");
+
+    try {
+      const response = await forgotPassword({ email: mail });
+
+      setSuccess("A 6-digit verification code has been sent to your email.");
+
+      if (response?.code) {
+        setOtpCode(response.code);
+      }
+    } catch {
+      setError("Unable to process your request. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <Container>
-      <Card>
-        <Title>Forgot password</Title>
+    <Wrapper>
+      <Container>
+        <ImageWrapper>
+          <Image
+            src={ForgotPassword}
+            alt="Forgot password illustration"
+            width={400}
+            height={400}
+          />
+        </ImageWrapper>
 
-        <Description>
-          Enter your email and we will send you a reset link.
-        </Description>
+        <Form onSubmit={handleSubmit}>
+          <Title>Forgot Password</Title>
 
-        <Input
-          type="email"
-          placeholder="Enter your email"
-          onChange={(e) => setEmail(e.target.value)}
-        />
+          <InputWrapper>
+            <Label htmlFor="email">Email</Label>
+            <Input
+              id="email"
+              type="email"
+              placeholder="Enter your email"
+              autoComplete="email"
+              value={email}
+              disabled={loading}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                if (error) setError("");
+              }}
+            />
+          </InputWrapper>
 
-        <Button onClick={handleSubmit}>Send Reset Link</Button>
-      </Card>
-    </Container>
+          <Button
+            type="submit"
+            disabled={loading || !email.trim()}
+          >
+            {loading ? (
+              <LoaderCircle size={18} />
+            ) : (
+              "Send Reset Link"
+            )}
+          </Button>
+
+          <AuthRedirect>
+            Back to
+            <button
+              type="button"
+              onClick={() => router.push("/auth/signin")}
+            >
+              Sign In
+            </button>
+          </AuthRedirect>
+
+          {success && (
+            <div style={{ marginTop: 12 }}>
+              <p style={{ color: "#16a34a", fontWeight: 500 }}>
+                {success}
+              </p>
+              <button
+                type="button"
+                onClick={() => router.push(`/auth/reset-password?email=${encodeURIComponent(email.trim().toLowerCase())}${otpCode ? `&code=${otpCode}` : ""}`)}
+                style={{
+                  marginTop: 10,
+                  background: "#2563eb",
+                  color: "white",
+                  padding: "8px 16px",
+                  borderRadius: "6px",
+                  border: "none",
+                  cursor: "pointer",
+                  fontSize: "14px",
+                  fontWeight: 500,
+                  width: "100%",
+                  textAlign: "center"
+                }}
+              >
+                Enter Verification Code to Reset Password
+              </button>
+            </div>
+          )}
+
+          {otpCode && (
+            <p style={{ marginTop: 12, fontSize: "14px", color: "#6b7280" }}>
+              Verification Code (Dev mode): <strong style={{ color: "#2563eb", fontSize: "16px" }}>{otpCode}</strong>
+            </p>
+          )}
+
+          {error && <ErrorMessage>{error}</ErrorMessage>}
+        </Form>
+      </Container>
+    </Wrapper>
   );
 }
-
-const Container = styled.div`
-  height: 100vh;
-  background: ${({ theme }) => theme.colors.background};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-
-const Card = styled.div`
-  width: 400px;
-  background: ${({ theme }) => theme.colors.card};
-  padding: 32px;
-  border-radius: 10px;
-  border: 1px solid ${({ theme }) => theme.colors.border};
-`;
-
-const Title = styled.h1`
-  font-size: 24px;
-  color: ${({ theme }) => theme.colors.textPrimary};
-  margin-bottom: 8px;
-`;
-
-const Description = styled.p`
-  color: ${({ theme }) => theme.colors.textSecondary};
-  margin-bottom: 20px;
-`;
-
-const Input = styled.input`
-  width: 100%;
-  padding: 10px;
-  border-radius: 6px;
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  margin-bottom: 16px;
-
-  &:focus {
-    outline: none;
-    border-color: ${({ theme }) => theme.colors.primary};
-  }
-`;
-
-const Button = styled.button`
-  width: 100%;
-  padding: 10px;
-  background: ${({ theme }) => theme.colors.primary};
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-
-  &:hover {
-    background: ${({ theme }) => theme.colors.primaryHover};
-  }
-`;

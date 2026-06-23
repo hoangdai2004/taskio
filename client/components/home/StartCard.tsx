@@ -2,17 +2,14 @@
 
 import styled from "styled-components";
 
-export default function StatCard({
-  title,
-  value,
-  icon,
-  color,
-}: {
+type Props = {
   title: string;
-  value: string;
+  value: number | string;
   icon: React.ReactNode;
   color: string;
-}) {
+};
+
+export default function StatCard({ title, value, icon, color }: Props) {
   return (
     <Card>
       <CardHeader>
@@ -23,7 +20,7 @@ export default function StatCard({
       <CardValue>{value}</CardValue>
 
       <Progress>
-        <Fill color={color} />
+        <Fill $color={color} />
       </Progress>
     </Card>
   );
@@ -32,13 +29,12 @@ export default function StatCard({
 const Card = styled.div`
   background: ${({ theme }) => theme.colors.card};
   padding: 24px;
-
   color: ${({ theme }) => theme.colors.textPrimary};
 
   border-radius: 12px;
   border: 1px solid ${({ theme }) => theme.colors.border};
 
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
 `;
 
 const CardHeader = styled.div`
@@ -51,7 +47,6 @@ const CardHeader = styled.div`
 
 const CardTitle = styled.div`
   font-size: 13px;
-
   color: ${({ theme }) => theme.colors.textMuted};
 `;
 
@@ -64,7 +59,6 @@ const CardValue = styled.div`
 
 const Progress = styled.div`
   height: 6px;
-
   background: ${({ theme }) => theme.colors.border};
 
   border-radius: 10px;
@@ -73,11 +67,11 @@ const Progress = styled.div`
   overflow: hidden;
 `;
 
-const Fill = styled.div<{ color: string }>`
+const Fill = styled.div<{ $color: string }>`
   height: 100%;
   width: 60%;
 
-  background: ${({ color }) => color};
+  background: ${({ $color }) => $color};
 
   border-radius: 10px;
 `;

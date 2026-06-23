@@ -1,8 +1,52 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import styled from "styled-components";
+import { useAuth } from "@/context/AuthContext";
+import { settingsService } from "@/lib/services/settings.service";
 
 export default function SettingsAccount() {
+  const { user, setUser } = useAuth();
+  const [email, setEmail] = useState(user?.email || "");
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    setEmail(user?.email || "");
+  }, [user]);
+
+  const handleSave = async () => {
+    setSaving(true);
+    setMessage("");
+
+    try {
+      const response = await settingsService.updateAccount({
+        email,
+        currentPassword: currentPassword || undefined,
+        newPassword: newPassword || undefined,
+      });
+
+      if (user && setUser) {
+        setUser({
+          ...user,
+          email: response.user.email,
+          fullName: response.user.fullName || user.fullName,
+        });
+      }
+
+      setMessage(response.message);
+      setCurrentPassword("");
+      setNewPassword("");
+    } catch (error) {
+      console.error("Failed to update account:", error);
+      setMessage("Unable to update account settings.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
   return (
     <Wrapper>
       <Title>Account Settings</Title>
@@ -12,15 +56,22 @@ export default function SettingsAccount() {
 
         <Field>
           <label>Username</label>
-          <input placeholder="username123" />
+          <input value={user?.name || user?.fullName || ""} disabled />
         </Field>
 
         <Field>
           <label>Email</label>
-          <input placeholder="email@example.com" />
+          <input
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="email@example.com"
+          />
         </Field>
 
-        <Button>Update Account</Button>
+        <Button onClick={handleSave} disabled={saving}>
+          {saving ? "Saving..." : "Update Account"}
+        </Button>
+        {message && <Message>{message}</Message>}
       </Card>
 
       <Card>
@@ -28,20 +79,25 @@ export default function SettingsAccount() {
 
         <Field>
           <label>Current Password</label>
-          <input type="password" />
+          <input
+            type="password"
+            value={currentPassword}
+            onChange={(e) => setCurrentPassword(e.target.value)}
+          />
         </Field>
 
         <Field>
           <label>New Password</label>
-          <input type="password" />
+          <input
+            type="password"
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+          />
         </Field>
 
-        <Field>
-          <label>Confirm Password</label>
-          <input type="password" />
-        </Field>
-
-        <Button>Update Password</Button>
+        <Button onClick={handleSave} disabled={saving || !currentPassword || !newPassword}>
+          {saving ? "Saving..." : "Change Password"}
+        </Button>
       </Card>
 
       <DangerCard>
@@ -148,6 +204,12 @@ const Button = styled.button`
   &:hover {
     background: ${({ theme }) => theme.colors.primaryHover};
   }
+`;
+
+const Message = styled.p`
+  margin-top: 12px;
+  color: ${({ theme }) => theme.colors.textSecondary};
+  font-size: 14px;
 `;
 
 const DeleteButton = styled.button`

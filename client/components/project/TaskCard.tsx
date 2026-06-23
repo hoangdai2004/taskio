@@ -7,21 +7,25 @@ import { MessageSquareMore, FileMinus, Ellipsis } from "lucide-react";
 interface Props {
   task: Task;
   onDragStart: (id: number) => void;
+  onClick?: () => void;
 }
 
-export default function TaskCard({ task, onDragStart }: Props) {
+export default function TaskCard({ task, onDragStart, onClick }: Props) {
   const handleDragStart = () => {
     onDragStart(task.id);
   };
 
   return (
-    <Card draggable onDragStart={handleDragStart}>
+    <Card draggable onDragStart={handleDragStart} onClick={onClick}>
       <Header>
         <Priority $type={task.priority}>{task.priority}</Priority>
         <IconEllipsis />
       </Header>
 
-      <Title>{task.title}</Title>
+      <Title>
+        {task.code && <TaskCode>{task.code}</TaskCode>}
+        {task.title}
+      </Title>
       <Desc>{task.desc}</Desc>
 
       <Bottom>
@@ -77,16 +81,26 @@ const Card = styled.div`
 
 const Title = styled.h4`
   color: ${({ theme }) => theme.colors.textPrimary};
-
   margin: 6px 0;
-
   font-size: 14px;
+  line-height: 1.4;
+  word-break: break-word;
+`;
+
+const TaskCode = styled.span`
+  color: ${({ theme }) => theme.colors.primary};
+  font-weight: 600;
+  margin-right: 6px;
 `;
 
 const Desc = styled.p`
   font-size: 13px;
-
   color: ${({ theme }) => theme.colors.textSecondary};
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  word-break: break-word;
 `;
 
 const Bottom = styled.div`

@@ -3,37 +3,52 @@
 import styled from "styled-components";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { User, Settings, Bell, Palette } from "lucide-react";
-
-const menus = [
-  {
-    label: "Profile",
-    href: "/dashboard/settings/profile",
-    icon: User,
-  },
-  {
-    label: "Account",
-    href: "/dashboard/settings/account",
-    icon: Settings,
-  },
-  {
-    label: "Notifications",
-    href: "/dashboard/settings/notifications",
-    icon: Bell,
-  },
-  {
-    label: "Appearance",
-    href: "/dashboard/settings/appearance",
-    icon: Palette,
-  },
-];
+import { User, Settings, Bell, Palette, Building2, Users, LayoutDashboard } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
 
 export default function SettingsSidebar() {
   const pathname = usePathname();
+  const { companies, activeCompanyId } = useAuth();
+
+  const activeCompany = companies.find((c) => c.id === activeCompanyId);
+  const isAdmin = activeCompany?.role === "ADMIN";
+
+  const baseMenus = [
+    {
+      label: "Profile",
+      href: "/dashboard/settings/profile",
+      icon: User,
+    },
+    {
+      label: "Account",
+      href: "/dashboard/settings/account",
+      icon: Settings,
+    },
+    {
+      label: "Notifications",
+      href: "/dashboard/settings/notifications",
+      icon: Bell,
+    },
+    {
+      label: "Appearance",
+      href: "/dashboard/settings/appearance",
+      icon: Palette,
+    },
+  ];
+
+  const adminMenus = [
+    {
+      label: "Admin Dashboard",
+      href: "/dashboard/settings/admin",
+      icon: LayoutDashboard,
+    },
+  ];
+
+  const allMenus = isAdmin ? [...baseMenus, ...adminMenus] : baseMenus;
 
   return (
     <Sidebar>
-      {menus.map((menu) => {
+      {allMenus.map((menu) => {
         const Icon = menu.icon;
 
         return (
