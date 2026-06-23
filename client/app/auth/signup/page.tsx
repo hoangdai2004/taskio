@@ -22,10 +22,15 @@ import {
   Form,
   InputWrapper,
   Label,
+  GoogleButton,
+  Divider,
 } from "@/styles/auth.style";
+import { googleSignIn } from "@/lib/services/auth.service";
+import { useAuth } from "@/context/AuthContext";
 
 export default function SignupPage() {
   const router = useRouter();
+  const { setUser: setAuthUser, setActiveCompanyId, setCompanies } = useAuth();
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -43,14 +48,17 @@ export default function SignupPage() {
   const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const fullName = `${firstName} ${lastName}`;
-    const mail = email.trim();
-    const pass = password;
-    const confirm = confirmPassword.trim();
+    if (loading) return;
+
+    const first = firstName.trim();
+    const last = lastName.trim();
+    const mail = email.trim().toLowerCase();
+
+    const fullName = `${first} ${last}`;
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    if (!firstName || !lastName || !mail || !pass || !confirm) {
+    if (!first || !last || !mail || !password || !confirmPassword) {
       setError("Please fill in all fields.");
       return;
     }
@@ -60,12 +68,12 @@ export default function SignupPage() {
       return;
     }
 
-    if (pass.length < 6) {
+    if (password.length < 6) {
       setError("Password must be at least 6 characters long.");
       return;
     }
 
-    if (pass !== confirm) {
+    if (password !== confirmPassword) {
       setError("Passwords do not match.");
       return;
     }
@@ -74,18 +82,56 @@ export default function SignupPage() {
     setError("");
 
     try {
-      const response = await signUp({
-        name: fullName,
+      await signUp({
+        fullName: fullName,
         email: mail,
-        password: pass,
+        password: password,
       });
 
-      alert(response.message);
-
-      router.replace("/signin");
+      router.push("/auth/signin");
     } catch (error) {
       const err = error as AxiosError<{ message: string }>;
-      setError(err.response?.data?.message || "Signup failed.");
+      if (err.response?.status === 409) {
+        setError("Email already exists.");
+      } else {
+        setError(err.response?.data?.message || "Signup failed.");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleSignin = async () => {
+    if (loading) return;
+    setLoading(true);
+    setError("");
+
+    try {
+      const response = await googleSignIn({
+        email: "demo@google.com",
+        fullName: "Demo User",
+        avatarUrl: ""
+      });
+
+      const user = response.user;
+      const companies = user?.companies ?? [];
+
+      localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("companies", JSON.stringify(companies));
+
+      setAuthUser(user);
+      setCompanies(companies);
+
+      if (companies.length > 0) {
+        const defaultCompanyId = companies[0].id;
+        localStorage.setItem("activeCompanyId", String(defaultCompanyId));
+        setActiveCompanyId(defaultCompanyId);
+        router.replace("/dashboard");
+      } else {
+        router.replace("/onboarding/create-company");
+      }
+    } catch (error: any) {
+      setError(error.response?.data?.message || "Google Sign in failed.");
     } finally {
       setLoading(false);
     }
@@ -167,7 +213,10 @@ export default function SignupPage() {
                   setError("");
                 }}
               />
-              <Icon type="button" onClick={() => !loading && setShowPassword(!showPassword)}>
+              <Icon
+                type="button"
+                onClick={() => !loading && setShowPassword(!showPassword)}
+              >
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </Icon>
             </InputWrapper>
@@ -179,8 +228,8 @@ export default function SignupPage() {
               <Input
                 id="confirmPassword"
                 type={showConfirmPassword ? "text" : "password"}
-                placeholder="Enter your confirm password"
                 autoComplete="new-password"
+                placeholder="Confirm your password"
                 value={confirmPassword}
                 disabled={loading}
                 onChange={(e) => {
@@ -189,28 +238,47 @@ export default function SignupPage() {
                 }}
               />
               <Icon
+                type="button"
                 onClick={() =>
                   !loading && setShowConfirmPassword(!showConfirmPassword)
                 }
               >
-                {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                {showConfirmPassword ? (
+                  <EyeOff size={18} />
+                ) : (
+                  <Eye size={18} />
+                )}
               </Icon>
             </InputWrapper>
           </PasswordWrapper>
+
+          {error && <ErrorMessage>{error}</ErrorMessage>}
 
           <Button
             type="submit"
             disabled={
               loading ||
-              !firstName ||
-              !lastName ||
-              !email ||
-              !password ||
-              !confirmPassword
+              !firstName.trim() ||
+              !lastName.trim() ||
+              !email.trim() ||
+              !password.trim() ||
+              !confirmPassword.trim()
             }
           >
-            {loading ? <LoaderCircle size={18} /> : "Sign Up"}
+            {loading ? <LoaderCircle className="spin" size={18} /> : "Sign Up"}
           </Button>
+
+          <Divider>or</Divider>
+
+          <GoogleButton type="button" onClick={handleGoogleSignin} disabled={loading}>
+            <Image
+              src="https://www.svgrepo.com/show/475656/google-color.svg"
+              alt="Google"
+              width={20}
+              height={20}
+            />
+            Continue with Google
+          </GoogleButton>
 
           <AuthRedirect>
             Already have an account?
@@ -218,8 +286,6 @@ export default function SignupPage() {
               Sign In
             </button>
           </AuthRedirect>
-
-          {error && <ErrorMessage>{error}</ErrorMessage>}
         </Form>
       </Container>
     </Wrapper>

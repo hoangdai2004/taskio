@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-export const Wrapper = styled.div`
+export const Wrapper = styled.main`
   width: 100%;
   min-height: 100vh;
 
@@ -13,10 +13,10 @@ export const Wrapper = styled.div`
   justify-content: center;
 `;
 
-export const Container = styled.div`
+export const Container = styled.section`
   width: 100%;
   max-width: 950px;
-  background: ${({ theme }) => theme.colors2.surface};
+  background: ${({ theme }) => theme.colors.surface};
 
   display: flex;
   border-radius: 6px;
@@ -35,8 +35,8 @@ export const ImageWrapper = styled.div`
 
   background: linear-gradient(
     135deg,
-    ${({ theme }) => theme.colors2.primary},
-    ${({ theme }) => theme.colors2.primaryHover}
+    ${({ theme }) => theme.colors.primary},
+    ${({ theme }) => theme.colors.primaryHover}
   );
 
   display: flex;
@@ -68,7 +68,7 @@ export const Form = styled.form`
 export const Title = styled.h1`
   font-size: 28px;
   font-weight: 700;
-  color: ${({ theme }) => theme.colors2.textPrimary};
+  color: ${({ theme }) => theme.colors.textPrimary};
   margin-bottom: 10px;
 `;
 
@@ -89,17 +89,17 @@ export const Input = styled.input`
   padding: 12px 14px;
 
   border-radius: 6px;
-  border: 1px solid ${({ theme }) => theme.colors2.border};
+  border: 1px solid ${({ theme }) => theme.colors.border};
 
   font-size: 14px;
-  color: ${({ theme }) => theme.colors2.textPrimary};
-  background: white;
+  color: ${({ theme }) => theme.colors.textPrimary};
+  background: ${({ theme }) => theme.colors.surface};
 
   transition: 0.2s;
 
   &:focus {
     outline: none;
-    border-color: ${({ theme }) => theme.colors2.primary};
+    border-color: ${({ theme }) => theme.colors.primary};
     box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
   }
 `;
@@ -118,10 +118,10 @@ export const Icon = styled.button`
   transform: translateY(-50%);
   cursor: pointer;
 
-  color: ${({ theme }) => theme.colors2.textPrimary};
+  color: ${({ theme }) => theme.colors.textPrimary};
 
   &:hover {
-    color: ${({ theme }) => theme.colors2.primary};
+    color: ${({ theme }) => theme.colors.primary};
   }
 `;
 
@@ -131,7 +131,7 @@ export const FormOptions = styled.div`
   align-items: center;
 
   font-size: 14px;
-  color: ${({ theme }) => theme.colors2.textSecondary};
+  color: ${({ theme }) => theme.colors.textSecondary};
 
   div {
     display: flex;
@@ -146,7 +146,7 @@ export const FormOptions = styled.div`
     background: none;
     border: none;
 
-    color: ${({ theme }) => theme.colors2.primary};
+    color: ${({ theme }) => theme.colors.primary};
     cursor: pointer;
 
     &:hover {
@@ -162,7 +162,7 @@ export const Button = styled.button`
   border-radius: 6px;
   border: none;
 
-  background: ${({ theme }) => theme.colors2.primary};
+  background: ${({ theme }) => theme.colors.primary};
   color: white;
 
   font-weight: 600;
@@ -176,11 +176,11 @@ export const Button = styled.button`
   transition: 0.2s;
 
   &:hover {
-    background: ${({ theme }) => theme.colors2.primaryHover};
+    background: ${({ theme }) => theme.colors.primaryHover};
   }
 
   &:disabled {
-    background: ${({ theme }) => theme.colors2.primary};
+    background: ${({ theme }) => theme.colors.primary};
     cursor: not-allowed;
   }
 `;
@@ -188,7 +188,7 @@ export const Button = styled.button`
 export const AuthRedirect = styled.div`
   text-align: center;
   font-size: 14px;
-  color: ${({ theme }) => theme.colors2.textSecondary};
+  color: ${({ theme }) => theme.colors.textSecondary};
 
   button {
     background: none;
@@ -196,7 +196,7 @@ export const AuthRedirect = styled.div`
 
     margin-left: 6px;
 
-    color: ${({ theme }) => theme.colors2.primary};
+    color: ${({ theme }) => theme.colors.primary};
     font-weight: 600;
 
     cursor: pointer;
@@ -209,11 +209,59 @@ export const AuthRedirect = styled.div`
 
 export const ErrorMessage = styled.div`
   background: #fee2e2;
-  color: ${({ theme }) => theme.colors2.danger};
+  color: ${({ theme }) => theme.colors.danger};
 
   padding: 10px;
   border-radius: 6px;
 
   font-size: 14px;
   text-align: center;
+`;
+
+export const GoogleButton = styled.button`
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 6px;
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  background: transparent;
+  color: ${({ theme }) => theme.colors.textPrimary};
+  font-weight: 600;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: 0.2s;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.03);
+  }
+
+  [data-theme='dark'] &:hover {
+    background: rgba(255, 255, 255, 0.05);
+  }
+`;
+
+export const Divider = styled.div`
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: ${({ theme }) => theme.colors.textMuted};
+  font-size: 13px;
+  margin: 4px 0;
+  
+  &::before, &::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid ${({ theme }) => theme.colors.borderLight};
+  }
+
+  &::before {
+    margin-right: 12px;
+  }
+
+  &::after {
+    margin-left: 12px;
+  }
 `;

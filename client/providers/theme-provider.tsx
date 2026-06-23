@@ -1,6 +1,7 @@
 "use client";
 
-import { ThemeProvider } from "styled-components";
+import { ThemeProvider as StyledThemeProvider } from "styled-components";
+import { AppThemeProvider } from "@/context/ThemeContext";
 import { theme } from "@/styles/theme";
 
 export default function ThemeProviders({
@@ -8,5 +9,9 @@ export default function ThemeProviders({
 }: {
   children: React.ReactNode;
 }) {
-  return <ThemeProvider theme={theme}>{children}</ThemeProvider>;
+  return (
+    <AppThemeProvider>
+      <StyledThemeProvider theme={theme}>{children}</StyledThemeProvider>
+    </AppThemeProvider>
+  );
 }

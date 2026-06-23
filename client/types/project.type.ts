@@ -4,11 +4,19 @@ export interface User {
   avatar: string;
 }
 
+export interface ProjectMember {
+  id: number;
+  name: string;
+  avatar: string;
+  role: "OWNER" | "ADMIN" | "MEMBER";
+}
+
 export type Priority = "low" | "medium" | "high";
 export type Status = "todo" | "progress" | "review" | "done";
 
 export interface Task {
   id: number;
+  code?: string;
   title: string;
   desc: string;
 
@@ -29,9 +37,12 @@ export interface Column {
 export interface Project {
   id: number;
   name: string;
+  description?: string;
   slug: string;
-
-  members: User[];
+  inviteCode?: string;
+  inviteCodeExpiresAt?: string;
+  members: ProjectMember[];
 
   tasks: Task[];
+  color: string;
 }

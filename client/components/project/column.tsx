@@ -3,8 +3,9 @@
 import styled from "styled-components";
 import { Column as ColumnType, Task, Status } from "@/types/project.type";
 import TaskCard from "./TaskCard";
-import { Dot } from "lucide-react";
-import { DefaultTheme } from "styled-components/dist/types";  
+import { Dot, Plus } from "lucide-react";
+import { DefaultTheme } from "styled-components/dist/types";
+import { useState } from "react";
 
 interface Props {
   column: ColumnType;
@@ -12,6 +13,8 @@ interface Props {
   dragTaskId: number | null;
   setDragTaskId: (id: number) => void;
   onDropTask: (taskId: number, status: Status) => void;
+  onAddTaskClick?: () => void;
+  onTaskClick?: (taskId: number) => void;
 }
 
 export default function Column({
@@ -20,12 +23,13 @@ export default function Column({
   dragTaskId,
   setDragTaskId,
   onDropTask,
+  onAddTaskClick,
+  onTaskClick,
 }: Props) {
   const columnTasks = tasks.filter((task) => task.status === column.id);
 
   const handleDrop = () => {
     if (!dragTaskId) return;
-
     onDropTask(dragTaskId, column.id);
   };
 
@@ -43,38 +47,37 @@ export default function Column({
             key={task.id}
             task={task}
             onDragStart={setDragTaskId}
+            onClick={() => onTaskClick?.(task.id)}
           />
         ))}
       </TaskList>
+
+      <AddButton onClick={onAddTaskClick}>
+        <Plus size={14} /> Add task
+      </AddButton>
     </Wrapper>
   );
 }
 
 const getStatusColor = (theme: DefaultTheme, status: Status) => {
   switch (status) {
-    case "todo":
-      return theme.colors.primary;
-    case "progress":
-      return theme.colors.warning;
-    case "review":
-      return theme.colors.review;
-    case "done":
-      return theme.colors.success;
-    default:
-      return theme.colors.primary;
+    case "todo": return theme.colors.primary;
+    case "progress": return theme.colors.warning;
+    case "review": return theme.colors.review;
+    case "done": return theme.colors.success;
+    default: return theme.colors.primary;
   }
 };
 
 const Wrapper = styled.div`
   width: 300px;
+  min-width: 300px;
   background: ${({ theme }) => theme.colors.card};
   padding: 16px;
   border-radius: 6px;
   border: 1px solid ${({ theme }) => theme.colors.border};
-
   display: flex;
   flex-direction: column;
-  max-height: 80vh;
 `;
 
 const Header = styled.div<{ $status: Status }>`
@@ -85,9 +88,7 @@ const Header = styled.div<{ $status: Status }>`
   color: ${({ theme }) => theme.colors.textPrimary};
   margin-bottom: 12px;
   padding-bottom: 6px;
-
-  border-bottom: 3px solid
-    ${({ theme, $status }) => getStatusColor(theme, $status)};
+  border-bottom: 3px solid ${({ theme, $status }) => getStatusColor(theme, $status)};
 `;
 
 const IDot = styled(Dot)<{ $status: Status }>`
@@ -99,10 +100,8 @@ const TotalTask = styled.div`
   align-items: center;
   justify-content: center;
   margin-left: auto;
-
   padding: 2px 8px;
   border-radius: 12px;
-
   font-size: 12px;
   background: ${({ theme }) => theme.colors.borderLight};
   color: ${({ theme }) => theme.colors.textSecondary};
@@ -112,6 +111,26 @@ const TaskList = styled.div`
   display: flex;
   flex-direction: column;
   gap: 10px;
-  overflow-y: auto;
-  flex: 1;
+`;
+
+const AddButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 12px;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px dashed ${({ theme }) => theme.colors.border};
+  background: transparent;
+  color: ${({ theme }) => theme.colors.textSecondary};
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    background: ${({ theme }) => theme.colors.primaryLight};
+    color: ${({ theme }) => theme.colors.primary};
+    border-color: ${({ theme }) => theme.colors.primary};
+  }
 `;

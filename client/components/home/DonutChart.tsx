@@ -46,7 +46,6 @@ export default function DonutChart({
       <ChartWrapper>
         <svg width={size} height={size} role="img">
           <g transform={`rotate(-90 ${size / 2} ${size / 2})`}>
-            {/* background ring */}
             <circle
               cx={size / 2}
               cy={size / 2}

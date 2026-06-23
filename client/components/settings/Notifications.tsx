@@ -1,68 +1,106 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import styled from "styled-components";
+import { settingsService } from "@/lib/services/settings.service";
+
+interface NotificationSettings {
+  emailNotifications: boolean;
+  inAppNotifications: boolean;
+}
 
 export default function SettingsNotifications() {
+  const [settings, setSettings] = useState<NotificationSettings>({
+    emailNotifications: true,
+    inAppNotifications: true,
+  });
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const response = await settingsService.getNotificationSettings();
+        setSettings(response);
+      } catch (error) {
+        console.error("Failed to load notification settings:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSettings();
+  }, []);
+
+  const handleSave = async () => {
+    setSaving(true);
+    setMessage("");
+
+    try {
+      const response = await settingsService.updateNotificationSettings(settings);
+      setMessage(response.message);
+    } catch (error) {
+      console.error("Failed to save notification settings:", error);
+      setMessage("Unable to save notification settings.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (loading) {
+    return <Wrapper>Loading notifications settings...</Wrapper>;
+  }
+
   return (
     <Wrapper>
       <Title>Notifications</Title>
 
       <Card>
-        <SectionTitle>Email Notifications</SectionTitle>
+        <SectionTitle>Notification Preferences</SectionTitle>
 
         <Item>
           <Info>
-            <Label>Task Updates</Label>
+            <Label>Email Notifications</Label>
             <Description>
-              Receive email when a task is updated.
+              Receive email updates for your account and tasks.
             </Description>
           </Info>
-          <Toggle type="checkbox" />
+          <Toggle
+            type="checkbox"
+            checked={settings.emailNotifications}
+            onChange={(e) =>
+              setSettings((prev) => ({
+                ...prev,
+                emailNotifications: e.target.checked,
+              }))
+            }
+          />
         </Item>
 
         <Item>
           <Info>
-            <Label>Project Invites</Label>
+            <Label>In-app Notifications</Label>
             <Description>
-              Get notified when someone invites you to a project.
+              Receive notifications inside the app.
             </Description>
           </Info>
-          <Toggle type="checkbox" />
+          <Toggle
+            type="checkbox"
+            checked={settings.inAppNotifications}
+            onChange={(e) =>
+              setSettings((prev) => ({
+                ...prev,
+                inAppNotifications: e.target.checked,
+              }))
+            }
+          />
         </Item>
 
-        <Item>
-          <Info>
-            <Label>Comments</Label>
-            <Description>
-              Receive notifications when someone comments on your task.
-            </Description>
-          </Info>
-          <Toggle type="checkbox" />
-        </Item>
-      </Card>
-
-      <Card>
-        <SectionTitle>Push Notifications</SectionTitle>
-
-        <Item>
-          <Info>
-            <Label>Task Assigned</Label>
-            <Description>
-              Notify when a task is assigned to you.
-            </Description>
-          </Info>
-          <Toggle type="checkbox" />
-        </Item>
-
-        <Item>
-          <Info>
-            <Label>Deadline Reminder</Label>
-            <Description>
-              Get reminder before task deadline.
-            </Description>
-          </Info>
-          <Toggle type="checkbox" />
-        </Item>
+        <Button onClick={handleSave} disabled={saving}>
+          {saving ? "Saving..." : "Save Notification Settings"}
+        </Button>
+        {message && <Message>{message}</Message>}
       </Card>
     </Wrapper>
   );
@@ -139,4 +177,24 @@ const Toggle = styled.input`
   height: 20px;
 
   cursor: pointer;
+`;
+
+const Button = styled.button`
+  margin-top: 20px;
+  padding: 10px 16px;
+  border-radius: 6px;
+  border: none;
+  background: ${({ theme }) => theme.colors.primary};
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+  &:hover {
+    background: ${({ theme }) => theme.colors.primaryHover};
+  }
+`;
+
+const Message = styled.p`
+  margin-top: 12px;
+  color: ${({ theme }) => theme.colors.textSecondary};
+  font-size: 14px;
 `;

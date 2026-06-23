@@ -10,6 +10,7 @@ declare module "styled-components" {
       textPrimary: string;
       textSecondary: string;
       textMuted: string;
+      surface: string;
 
       background: string;
       card: string;
@@ -21,6 +22,7 @@ declare module "styled-components" {
       warning: string;
       danger: string;
       info: string;
+      review: string;
     };
 
     colors2: {
@@ -48,7 +50,7 @@ declare module "styled-components" {
       default: string;
     }
     gradients: {
-      main: string;
+      main: (angle?: number) => string;
     }
   }
 }

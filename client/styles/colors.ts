@@ -1,23 +1,26 @@
 export const colors = {
-  primary: "#2563eb",
-  primaryHover: "#1d4ed8",
-  primaryLight: "#eff6ff",
+  textPrimary: "var(--color-text-primary)",
+  textSecondary: "var(--color-text-secondary)",
 
-  textPrimary: "#0f172a",
-  textSecondary: "#475569",
-  textMuted: "#94a3b8",
+  primary: "var(--color-primary)",
+  primaryHover: "var(--color-primary-hover)",
+  primaryLight: "var(--color-primary-light)",
 
-  background: "#f8fafc",
-  card: "#ffffff",
+  border: "var(--color-border)",
+  borderLight: "var(--color-border-light)",
+  
+  background: "var(--color-background)",
+  surface: "var(--color-surface)",
+  card: "var(--color-card)",
+  textMuted: "var(--color-text-muted)",
 
-  border: "#e5e7eb",
-  borderLight: "#f1f5f9",
+  todo: "var(--color-todo)",
+  inProgress: "var(--color-in-progress)",
+  review: "var(--color-review)",
+  done: "var(--color-done)",
 
-  success: "#22c55e",
-  warning: "#f59e0b",
-  danger: "#ef4444",
-  info: "#0ea5e9",
-
-  review: "#facc15",
+  success: "var(--color-success)",
+  danger: "var(--color-danger)",
+  warning: "var(--color-warning)",
+  info: "var(--color-info)",
 };
-
