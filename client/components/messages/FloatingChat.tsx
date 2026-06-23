@@ -90,7 +90,7 @@ export default function FloatingChat({ isFullScreen = false }: { isFullScreen?: 
     const loadChannels = async () => {
       try {
         const data = await getChannels(activeCompanyId);
-        setChannels(data);
+        setChannels(data.map((c: Channel) => ({ ...c, unreadCount: 0 })));
       } catch (err) {
         console.error("Failed to load channels:", err);
       }

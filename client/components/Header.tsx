@@ -197,7 +197,7 @@ export default function Header({ onOpenMenu }: Props) {
                     <SearchItem key={user.id} onMouseDown={async (e) => {
                       e.preventDefault();
                       try {
-                        const members = await getCompanyMembers(activeCompanyId!);
+                        const { members } = await getCompanyMembers(activeCompanyId!);
                         const member = members.find(m => m.id === user.id);
                         if (member) {
                           setSelectedUserForProfile(member);

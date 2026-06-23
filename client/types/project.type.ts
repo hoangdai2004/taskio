@@ -27,6 +27,7 @@ export interface Task {
   files: number;
 
   assignees: User[];
+  dueDate?: string;
 }
 
 export interface Column {

@@ -256,7 +256,6 @@ export default function TasksPage() {
           onClose={() => setShowCreateModal(false)}
           onSubmit={handleCreateTask}
           projects={projects}
-          assignees={assignees}
         />
       )}
 
