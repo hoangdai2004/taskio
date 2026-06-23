@@ -114,7 +114,7 @@ const ModalContainer = styled.div`
 
 const Header = styled.div`
   height: 100px;
-  background: ${({ theme }) => theme.gradients.primary};
+  background: ${({ theme }) => theme.gradients.main(135)};
   position: relative;
 `;
 
